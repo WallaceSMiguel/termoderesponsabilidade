@@ -17,7 +17,8 @@ from email.message import EmailMessage
 from email.utils import formataddr, make_msgid
 from functools import wraps
 
-from flask import Flask, g, jsonify, request, send_from_directory, session
+import tempfile
+from flask import Flask, g, jsonify, request, send_file, send_from_directory, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 if getattr(sys, "frozen", False):
@@ -629,6 +630,184 @@ def api_enviar_termo(tid):
     registrar(tid, "enviado por e-mail", para)
     db().commit()
     return jsonify(ok=True)
+
+
+# ---------------------------------------------------------------- backup
+
+BACKUP_DIR = os.path.join(DATA_DIR, "backups")
+BACKUP_RE = re.compile(r"^(auto|manual|antes-restauracao)-\d{4}-\d{2}-\d{2}_\d{6}\.db$")
+MANTER_AUTO = int(os.environ.get("BACKUPS_AUTOMATICOS", "30"))
+_ultimo_auto = {"dia": None}
+
+
+def _carimbo():
+    return datetime.now().strftime("%Y-%m-%d_%H%M%S")
+
+
+def criar_backup(tipo):
+    """Cópia consistente do banco (API de backup do SQLite) — segura mesmo com o sistema em uso."""
+    os.makedirs(BACKUP_DIR, exist_ok=True)
+    nome = f"{tipo}-{_carimbo()}.db"
+    tmp = os.path.join(BACKUP_DIR, f".{nome}.tmp")
+    src = sqlite3.connect(DB_PATH, timeout=15)
+    dst = sqlite3.connect(tmp)
+    try:
+        src.backup(dst)
+        dst.execute("PRAGMA journal_mode=DELETE")
+        dst.commit()
+    finally:
+        dst.close()
+        src.close()
+    os.replace(tmp, os.path.join(BACKUP_DIR, nome))
+    return nome
+
+
+def listar_backups():
+    if not os.path.isdir(BACKUP_DIR):
+        return []
+    out = []
+    for n in os.listdir(BACKUP_DIR):
+        if BACKUP_RE.match(n):
+            st = os.stat(os.path.join(BACKUP_DIR, n))
+            out.append({"nome": n, "tipo": "antes-restauracao" if n.startswith("antes") else n.split("-")[0],
+                        "tamanho": st.st_size, "mtime": st.st_mtime,
+                        "criado_em": datetime.fromtimestamp(st.st_mtime, timezone.utc).isoformat(timespec="seconds")})
+    out.sort(key=lambda b: b["mtime"], reverse=True)  # mais recente primeiro
+    for b in out:
+        b.pop("mtime")
+    return out
+
+
+def _limpar_automaticos():
+    autos = sorted(b["nome"] for b in listar_backups() if b["tipo"] == "auto")
+    for n in autos[:-MANTER_AUTO] if MANTER_AUTO > 0 else []:
+        try:
+            os.remove(os.path.join(BACKUP_DIR, n))
+        except OSError:
+            pass
+
+
+@app.before_request
+def _backup_diario():
+    """Um backup automático por dia, feito no primeiro acesso do dia (não precisa de agendador)."""
+    hoje = datetime.now().strftime("%Y-%m-%d")
+    if _ultimo_auto["dia"] == hoje or not request.path.startswith("/api/"):
+        return
+    _ultimo_auto["dia"] = hoje
+    try:
+        if not any(b["nome"].startswith(f"auto-{hoje}") for b in listar_backups()):
+            criar_backup("auto")
+            _limpar_automaticos()
+    except Exception as e:  # backup nunca pode derrubar o sistema
+        print("Falha no backup automático:", e, flush=True)
+
+
+def validar_banco(caminho):
+    """Confere se o arquivo é um banco deste sistema, íntegro e com um administrador ativo."""
+    try:
+        with open(caminho, "rb") as f:
+            if f.read(16) != b"SQLite format 3\x00":
+                return "O arquivo não é um backup do sistema (formato inválido)"
+        c = sqlite3.connect(f"file:{caminho}?mode=ro", uri=True)
+        try:
+            tabelas = {r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            if not {"users", "termos", "config", "historico"} <= tabelas:
+                return "O arquivo não é um backup deste sistema (tabelas ausentes)"
+            if c.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
+                return "O backup está corrompido"
+            if not c.execute("SELECT 1 FROM users WHERE perfil='admin' AND ativo=1").fetchone():
+                return "O backup não tem nenhum administrador ativo"
+        finally:
+            c.close()
+    except sqlite3.DatabaseError:
+        return "O arquivo não é um backup válido"
+    return None
+
+
+def resumo_banco(caminho):
+    c = sqlite3.connect(f"file:{caminho}?mode=ro", uri=True)
+    try:
+        return {"termos": c.execute("SELECT COUNT(*) FROM termos").fetchone()[0],
+                "usuarios": c.execute("SELECT COUNT(*) FROM users").fetchone()[0]}
+    finally:
+        c.close()
+
+
+@app.get("/api/backups")
+@login_required(admin=True)
+def api_backups():
+    return jsonify(backups=listar_backups(), automaticos=MANTER_AUTO, atual=resumo_banco(DB_PATH))
+
+
+@app.post("/api/backups")
+@login_required(admin=True)
+def api_criar_backup():
+    try:
+        nome = criar_backup("manual")
+    except Exception as e:
+        return jsonify(erro=f"Não foi possível criar o backup: {e}"), 500
+    return jsonify(nome=nome), 201
+
+
+@app.get("/api/backups/<nome>")
+@login_required(admin=True)
+def api_baixar_backup(nome):
+    if not BACKUP_RE.match(nome) or not os.path.isfile(os.path.join(BACKUP_DIR, nome)):
+        return jsonify(erro="Backup não encontrado"), 404
+    return send_file(os.path.join(BACKUP_DIR, nome), as_attachment=True,
+                     download_name=f"termos-backup-{nome}", mimetype="application/octet-stream")
+
+
+@app.delete("/api/backups/<nome>")
+@login_required(admin=True)
+def api_excluir_backup(nome):
+    p = os.path.join(BACKUP_DIR, nome)
+    if not BACKUP_RE.match(nome) or not os.path.isfile(p):
+        return jsonify(erro="Backup não encontrado"), 404
+    os.remove(p)
+    return jsonify(ok=True)
+
+
+@app.post("/api/backups/restaurar")
+@login_required(admin=True)
+def api_restaurar_backup():
+    """Restaura a partir de um backup do servidor (nome) ou de um arquivo enviado (base64).
+    Antes de substituir, guarda uma cópia do banco atual em 'antes-restauracao-...'."""
+    d = request.get_json() or {}
+    tmp = None
+    try:
+        if d.get("nome"):
+            if not BACKUP_RE.match(d["nome"]):
+                return jsonify(erro="Backup não encontrado"), 404
+            origem = os.path.join(BACKUP_DIR, d["nome"])
+            if not os.path.isfile(origem):
+                return jsonify(erro="Backup não encontrado"), 404
+        else:
+            try:
+                dados = base64.b64decode((d.get("arquivo") or "").split(",")[-1], validate=True)
+            except Exception:
+                return jsonify(erro="Arquivo inválido"), 400
+            fd, tmp = tempfile.mkstemp(suffix=".db", dir=DATA_DIR)
+            with os.fdopen(fd, "wb") as f:
+                f.write(dados)
+            origem = tmp
+        erro = validar_banco(origem)
+        if erro:
+            return jsonify(erro=erro), 400
+        seguranca = criar_backup("antes-restauracao")
+        src = sqlite3.connect(f"file:{origem}?mode=ro", uri=True)
+        dst = sqlite3.connect(DB_PATH, timeout=30)
+        try:
+            src.backup(dst)  # substitui o conteúdo do banco em uso de forma atômica
+        finally:
+            src.close()
+            dst.close()
+        init_db()  # aplica migrações caso o backup seja de uma versão anterior
+        print(f"Banco restaurado por {g.user['login']} (cópia anterior: {seguranca})", flush=True)
+        return jsonify(ok=True, copia_anterior=seguranca, **resumo_banco(DB_PATH))
+    finally:
+        if tmp and os.path.exists(tmp):
+            os.remove(tmp)
 
 
 # ---------------------------------------------------------------- front

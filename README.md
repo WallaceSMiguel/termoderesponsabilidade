@@ -45,3 +45,8 @@ python -m PyInstaller --noconfirm --onefile --name TermosResponsabilidade --icon
 No arquivo WSGI, defina `DATA_DIR` (pasta fora do código), `COOKIE_SECURE=1` e `SQLITE_JOURNAL=DELETE`
 (o modo WAL do SQLite não é seguro no disco de rede do PythonAnywhere). Para atualizar:
 `cd ~/termoderesponsabilidade && git pull` no console e **Reload** na aba Web.
+
+## Backup
+Menu **Backup** (administrador): baixar uma cópia completa, backups automáticos diários no servidor
+(guarda os 30 mais recentes — ajuste com `BACKUPS_AUTOMATICOS`) e restauração a partir de um backup,
+sempre guardando antes uma cópia do estado atual ("Antes de restaurar"). Os arquivos ficam em `DATA_DIR/backups`.
