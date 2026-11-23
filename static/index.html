@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Termos de Responsabilidade</title>
+<link rel="icon" href="/static/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#F2501B; --brand-dark:#C93A0C; --brand-soft:#FFF1EB;
+  --ink:#24272B; --muted:#5E646B; --line:#E3E5E8; --bg:#EEF0F2;
+  --ok:#1d7a3c; --ok-bg:#e5f5ea; --info:#24569b; --info-bg:#e8f0fb; --bad:#a1271b; --bad-bg:#fde8e6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:14px}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--brand-dark)}
+[hidden]{display:none!important}
+
+/* ---------- buttons / inputs ---------- */
+.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--ink);white-space:nowrap}
+.btn:hover{border-color:#c4c8cd}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary:hover{background:var(--brand-dark)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.danger{color:var(--bad)}
+.btn.small{padding:5px 10px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:default}
+label.f{display:grid;gap:4px;font-size:12px;color:var(--muted);font-weight:500}
+label.f input,label.f select,label.f textarea,.input{border:1px solid var(--line);border-radius:7px;padding:8px 10px;background:#fff;font-size:14px;color:var(--ink);width:100%}
+label.f textarea{resize:vertical;min-height:60px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--brand-soft);border-color:var(--brand)}
+.hint{font-size:12px;color:var(--muted);margin:0}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.err{color:var(--bad);font-size:13px;min-height:18px;margin:0}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:14px;padding:8px 20px;background:#fff;border-bottom:1px solid var(--line);height:56px}
+.topbar img{height:32px}
+.nav{display:flex;gap:2px;margin-left:10px}
+.nav a{padding:7px 12px;border-radius:7px;text-decoration:none;color:var(--muted);font-weight:500}
+.nav a.on{background:var(--brand-soft);color:var(--brand-dark)}
+.nav a:hover{color:var(--ink)}
+.sp{flex:1}
+.who{font-size:13px;color:var(--muted);text-align:right;line-height:1.25}
+.who b{color:var(--ink);display:block}
+
+/* ---------- pages ---------- */
+.page{max-width:1180px;margin:0 auto;padding:24px 20px 60px}
+.page-head{display:flex;align-items:flex-end;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.page-head h2{margin:0;font-size:22px}
+.page-head p{margin:2px 0 0;color:var(--muted)}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.stat{padding:14px 16px}
+.stat .n{font-size:26px;font-weight:700}
+.stat .l{color:var(--muted);font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.filters{display:flex;gap:10px;padding:12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.filters .input{max-width:360px}
+.filters select{width:auto}
+table.list{width:100%;border-collapse:collapse}
+table.list th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);font-weight:600}
+table.list td{padding:11px 14px;border-bottom:1px solid #f0f1f3;vertical-align:middle}
+table.list tr.click{cursor:pointer}
+table.list tr.click:hover td{background:#fafbfc}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:13px}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600}
+.badge.ativo{background:var(--info-bg);color:var(--info)}
+.badge.devolvido{background:var(--ok-bg);color:var(--ok)}
+.badge.cancelado{background:#eceef0;color:#666}
+.badge.admin{background:var(--brand-soft);color:var(--brand-dark)}
+.badge.usuario{background:#eceef0;color:#555}
+.badge.off{background:var(--bad-bg);color:var(--bad)}
+
+/* ---------- login ---------- */
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login{width:100%;max-width:380px;padding:28px}
+.login img{width:100%;max-width:280px;display:block;margin:0 auto 18px}
+.login h2{text-align:center;margin:0 0 4px;font-size:18px}
+.login p.sub{text-align:center;color:var(--muted);margin:0 0 18px}
+.login form{display:grid;gap:12px}
+
+/* ---------- editor ---------- */
+.editor{display:grid;grid-template-columns:minmax(360px,430px) 1fr;min-height:calc(100vh - 56px)}
+.form{background:#fff;border-right:1px solid var(--line);padding:16px 18px 80px;overflow:auto;max-height:calc(100vh - 56px);position:sticky;top:56px}
+.form-actions{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+.preview{padding:28px 24px 60px;overflow:auto}
+details.sec{border:1px solid var(--line);border-radius:10px;margin-bottom:12px;background:#fff}
+details.sec>summary{list-style:none;cursor:pointer;padding:12px 14px;font-weight:600;display:flex;align-items:center;gap:10px}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary .num{width:22px;height:22px;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:12px;display:grid;place-items:center;font-weight:700}
+details.sec>summary::after{content:"▾";margin-left:auto;color:var(--muted);transition:transform .15s}
+details.sec:not([open])>summary::after{transform:rotate(-90deg)}
+.sec .body{padding:2px 14px 14px;display:grid;gap:10px}
+.item-card{border:1px dashed #d5d8dc;border-radius:8px;padding:10px;display:grid;gap:8px;position:relative}
+.item-card .idx{font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.04em}
+.item-card .rm{position:absolute;top:6px;right:6px}
+.row3{display:grid;grid-template-columns:1.4fr .6fr 1fr;gap:8px}
+.toggle{display:flex;align-items:center;gap:8px;font-weight:500;font-size:13px}
+
+/* ---------- editor: tipo, unidades, acessos ---------- */
+.tipo-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.tipo-opt{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:10px 8px;cursor:pointer;display:grid;justify-items:center;gap:2px;text-align:center;transition:all .15s}
+.tipo-opt .ic{font-size:20px}
+.tipo-opt b{font-size:13px}
+.tipo-opt small{font-size:11px;color:var(--muted);line-height:1.25}
+.tipo-opt:hover{border-color:#f7b59d}
+.tipo-opt.on{border-color:var(--brand);background:var(--brand-soft);box-shadow:0 0 0 3px rgba(242,80,27,.12)}
+.tipo-opt.on b{color:var(--brand-dark)}
+.lbl{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:500}
+.chip:hover{border-color:#f7b59d}
+.chip.on{border-color:var(--brand);background:var(--brand);color:#fff}
+.sys-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.sys{position:relative;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:10px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;text-align:left;transition:all .15s}
+.sys .ic{width:30px;height:30px;border-radius:8px;background:#f3f4f6;display:grid;place-items:center;font-size:16px;flex:none}
+.sys .ck{position:absolute;top:6px;right:8px;font-style:normal;font-size:12px;color:#fff;background:var(--brand);width:18px;height:18px;border-radius:50%;display:none;place-items:center}
+.sys:hover{border-color:#f7b59d}
+.sys.on{border-color:var(--brand);background:var(--brand-soft)}
+.sys.on .ic{background:#fff}
+.sys.on .ck{display:grid}
+.sys.outro{border-style:dashed;color:var(--muted)}
+.acc-tools{display:flex;gap:8px;flex-wrap:wrap}
+.acc-card .idx{font-size:12px;text-transform:none;letter-spacing:0}
+.pw{display:flex;gap:6px}
+.pw input{font-family:ui-monospace,Consolas,monospace}
+.empty-acc{border:1px dashed #d5d8dc;border-radius:8px;padding:14px;text-align:center;color:var(--muted);font-size:13px}
+.senha-aviso{background:#fff8e6;border:1px solid #f4d48a;color:#7a5200;border-radius:10px;padding:10px 12px;font-size:13px}
+.unit-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.unit-tab{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600;display:flex;gap:8px;align-items:center}
+.unit-tab .n{background:#eef0f2;color:var(--muted);border-radius:99px;font-size:12px;padding:1px 8px}
+.unit-tab.on{border-color:var(--brand);background:var(--brand);color:#fff}
+.unit-tab.on .n{background:rgba(255,255,255,.25);color:#fff}
+.badge.t-equipamentos{background:#eef0f2;color:#444}
+.badge.t-acessos{background:#efe9fd;color:#5b3cc4}
+.badge.t-completo{background:var(--brand-soft);color:var(--brand-dark)}
+
+/* ---------- view ---------- */
+.view{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start;max-width:1240px;margin:0 auto;padding:24px 20px 60px}
+.side{position:sticky;top:76px;display:grid;gap:12px}
+.side .card{padding:14px}
+.side h4{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.side .actions{display:grid;gap:8px}
+.side .actions .btn{justify-content:center}
+.timeline{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:13px}
+.timeline li{border-left:2px solid var(--line);padding-left:10px}
+.timeline .w{color:var(--muted);font-size:12px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px;margin:0}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:500}
+
+/* ---------- dialog ---------- */
+dialog{border:0;border-radius:12px;padding:0;width:min(440px,calc(100vw - 32px));box-shadow:0 20px 60px rgba(0,0,0,.25)}
+dialog::backdrop{background:rgba(20,22,25,.45)}
+dialog form{padding:20px;display:grid;gap:12px}
+dialog h3{margin:0}
+.dlg-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#24272B;color:#fff;padding:10px 18px;border-radius:8px;z-index:100;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+
+/* ---------- document (A4) ---------- */
+.sheet{width:210mm;min-height:297mm;margin:0 auto;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06),0 12px 40px rgba(0,0,0,.08);padding:16mm 18mm 22mm;position:relative;font-family:"Source Serif 4",Georgia,serif;font-size:10.5pt;line-height:1.5;color:#1f2226}
+.doc-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:10px;border-bottom:2.5px solid var(--brand)}
+.doc-head img{height:54px;object-fit:contain}
+.doc-head .meta{text-align:right;font-family:Inter,sans-serif;font-size:8pt;color:var(--muted);line-height:1.45}
+.doc-head .meta b{color:var(--ink)}
+.doc-num{display:inline-block;margin-top:3px;font-weight:700;color:var(--brand-dark);font-size:8.5pt}
+.doc-title{font-family:Inter,sans-serif;text-align:center;margin:18px 0 4px;font-size:15pt;font-weight:700;letter-spacing:.02em;color:var(--ink)}
+.doc-sub{text-align:center;font-family:Inter,sans-serif;font-size:8.5pt;color:var(--muted);margin:0 0 16px}
+.sheet p{margin:0 0 8px;text-align:justify}
+.clause{margin-top:12px;break-inside:avoid-page}
+.clause h3{font-family:Inter,sans-serif;font-size:9.5pt;font-weight:700;color:var(--brand-dark);text-transform:uppercase;letter-spacing:.04em;margin:0 0 5px;padding-left:8px;border-left:3px solid var(--brand)}
+.clause ul{margin:4px 0 6px;padding-left:20px}
+.clause li{margin:1px 0}
+.fill{font-weight:600;border-bottom:1px solid #9aa0a6;padding:0 2px}
+.fill.empty{color:#b0b4b9;font-weight:400}
+.ficha{display:grid;grid-template-columns:1fr 1fr;border:1px solid #d9dcdf;border-radius:6px;margin:0 0 12px;font-family:Inter,sans-serif;overflow:hidden}
+.ficha>div{padding:6px 10px;border-bottom:1px solid #eceef0;border-right:1px solid #eceef0;display:grid;gap:1px}
+.ficha>div:nth-child(2n){border-right:0}
+.ficha>div:nth-last-child(-n+2){border-bottom:0}
+.ficha span{font-size:7pt;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+.ficha b{font-size:9.5pt}
+.mono-doc{font-family:ui-monospace,Consolas,monospace;font-weight:600}
+.blank-line{display:inline-block;width:90%;border-bottom:1px solid #9aa0a6;height:11px}
+.sheet p.note{font-family:Inter,sans-serif;font-size:7.5pt;color:var(--muted);margin:2px 0 6px}
+table.items{width:100%;border-collapse:collapse;font-family:Inter,sans-serif;font-size:8.5pt;margin:6px 0 4px}
+table.items th{background:var(--brand);color:#fff;font-weight:600;text-align:left;padding:6px 7px;border:1px solid var(--brand)}
+table.items td{border:1px solid #d9dcdf;padding:6px 7px;vertical-align:top;word-break:break-word}
+table.items tr:nth-child(even) td{background:#fafafa}
+table.items td.c{text-align:center}
+.pill{display:inline-block;padding:1px 7px;border-radius:99px;font-size:7.5pt;font-weight:600;background:#eef0f2;color:#444}
+.pill.novo{background:#e5f5ea;color:#1d7a3c}.pill.bom{background:#e8f0fb;color:#24569b}.pill.regular{background:#fff4dc;color:#8a5a00}.pill.danificado{background:#fde8e6;color:#a1271b}
+.sig-wrap{margin-top:22px;break-inside:avoid-page}
+.place-date{font-family:Inter,sans-serif;font-size:9.5pt;margin-bottom:26px}
+.sigs{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.sig{font-family:Inter,sans-serif;font-size:8.5pt}
+.sig .line{border-top:1px solid #333;margin-top:46px;padding-top:5px;text-align:center;font-weight:600;font-size:9pt}
+.sig .role{text-align:center;color:var(--muted);font-size:8pt;margin-bottom:6px}
+.sig dl{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;margin:0}
+.sig dt{color:var(--muted)}.sig dd{margin:0;font-weight:500}
+.obs-box{margin-top:16px;border:1px solid #d9dcdf;border-radius:6px;padding:8px 10px;font-family:Inter,sans-serif;font-size:8.5pt;min-height:40px}
+.obs-box b{color:var(--muted);font-weight:600}
+.doc-foot{position:absolute;left:18mm;right:18mm;bottom:9mm;border-top:1px solid var(--line);padding-top:5px;font-family:Inter,sans-serif;font-size:7pt;color:#8a9097;display:flex;justify-content:space-between;gap:12px}
+
+/* versão usada para gerar o PDF do e-mail */
+.pdf-host{position:fixed;left:-10000px;top:0;width:210mm;background:#fff}
+.sheet.pdf{width:210mm;min-height:0;box-shadow:none;margin:0;padding:2mm 15mm 0}
+.sheet.pdf .doc-foot{position:static;margin-top:14px}
+.send-opt{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;background:var(--brand-soft);border-radius:8px;padding:9px 12px;margin-bottom:12px;color:var(--brand-dark)}
+
+@media (max-width:1000px){
+  .editor,.view{grid-template-columns:1fr}
+  .form{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line)}
+  .side{position:static}
+  .preview{padding:16px;overflow-x:auto}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .nav{display:none}
+  .topbar .who{display:none}
+}
+@media (max-width:640px){
+  table.list .hide-sm{display:none}
+}
+
+@page{size:A4;margin:14mm 16mm 18mm}
+@media print{
+  html,body{background:#fff}
+  .noprint,.topbar,.form,.side{display:none!important}
+  .editor,.view{display:block;padding:0;margin:0}
+  .preview{padding:0;overflow:visible}
+  .sheet{width:auto;min-height:0;box-shadow:none;padding:0;margin:0}
+  .doc-foot{position:fixed;left:0;right:0;bottom:-10mm}
+  table.items th,.pill,.clause h3,.doc-head{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar noprint" id="topbar" hidden>
+  <img src="/static/logo.jpg" alt="Valorização" id="topLogo">
+  <nav class="nav" id="nav">
+    <a href="#/termos" data-r="termos">Termos</a>
+    <a href="#/novo" data-r="novo">Novo termo</a>
+    <a href="#/usuarios" data-r="usuarios" data-admin>Usuários</a>
+    <a href="#/empresa" data-r="empresa" data-admin>Empresa</a>
+  </nav>
+  <span class="sp"></span>
+  <div class="who" id="who"></div>
+  <button class="btn small ghost" id="btnSenha" title="Alterar minha senha">Minha senha</button>
+  <button class="btn small" id="btnSair">Sair</button>
+</header>
+
+<div id="root"></div>
+
+<dialog id="dlg"><form method="dialog" id="dlgForm"></form></dialog>
+
+<script>
+/* =================================================================== utils */
+const $ = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+const root = $("#root");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const digits = s => String(s||"").replace(/\D/g,"");
+const maskCPF = v => { v=digits(v).slice(0,11); return v.replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d{1,2})$/,"$1-$2"); };
+const maskCNPJ = v => { v=digits(v).slice(0,14); return v.replace(/^(\d{2})(\d)/,"$1.$2").replace(/^(\d{2})\.(\d{3})(\d)/,"$1.$2.$3").replace(/\.(\d{3})(\d)/,".$1/$2").replace(/(\d{4})(\d)/,"$1-$2"); };
+const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const dataExtenso = s => { if(!s) return ""; const [y,m,d]=s.split("-").map(Number); return `${d} de ${MESES[m-1]} de ${y}`; };
+const fmtDT = s => s ? new Date(s).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}) : "—";
+const fmtD = s => s ? new Date(s).toLocaleDateString("pt-BR") : "—";
+const hoje = () => { const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
+const ESTADOS = ["Novo","Bom","Usado (funcionando)","Regular","Danificado"];
+const STATUS_LABEL = {ativo:"Ativo",devolvido:"Devolvido",cancelado:"Cancelado"};
+
+/* ---------- PDF do termo (para envio por e-mail) ---------- */
+let _h2p = null;
+function carregarHtml2pdf(){
+  if(window.html2pdf) return Promise.resolve();
+  if(_h2p) return _h2p;
+  _h2p = new Promise((ok, fail)=>{
+    const s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+    s.onload = ok; s.onerror = ()=>{ _h2p=null; fail(new Error("Sem internet para gerar o PDF")); };
+    document.head.append(s);
+  });
+  return _h2p;
+}
+async function gerarPDFBase64(dados, numero){
+  await carregarHtml2pdf();
+  const host = document.createElement("div"); host.className = "pdf-host";
+  host.innerHTML = `<article class="sheet pdf">${docHTML(dados, numero)}</article>`;
+  document.body.append(host);
+  try{
+    await Promise.all([...host.querySelectorAll("img")].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r;})));
+    const uri = await html2pdf().set({
+      margin:[10,0,10,0], image:{type:"jpeg",quality:0.95},
+      html2canvas:{scale:2,useCORS:true,backgroundColor:"#ffffff",scrollX:0,scrollY:0}, // sem scroll: evita PDF em branco com a página rolada
+      jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},
+      pagebreak:{mode:["css","legacy"],avoid:[".clause",".sig-wrap","tr",".doc-head"]}
+    }).from(host.firstElementChild).outputPdf("datauristring");
+    return uri;
+  } finally { host.remove(); }
+}
+function dialogEnviarEmail(t, onDone){
+  const email = t.dados.email || "";
+  openDialog(`<h3>Enviar termo por e-mail</h3>
+    <p class="hint">Uma via em PDF do termo <b>${esc(t.numero)}</b> será enviada ao colaborador.</p>
+    <label class="f">E-mail do colaborador<input name="para" type="email" value="${esc(email)}" required placeholder="nome@exemplo.com"></label>
+    <label class="f">Mensagem adicional (opcional)<textarea name="msg" placeholder="Ex.: Qualquer dúvida, fale com o RH."></textarea></label>
+    <p class="err" data-err></p>`, "Enviar", async form=>{
+      const btn = $("[data-ok]", form); btn.disabled = true; btn.textContent = "Gerando PDF…";
+      try{
+        const pdf = await gerarPDFBase64(t.dados, t.numero);
+        btn.textContent = "Enviando…";
+        const f = new FormData(form);
+        await api(`/api/termos/${t.id}/email`, {method:"POST", body:{para:f.get("para"), mensagem:f.get("msg"), pdf}});
+        toast(`Termo enviado para ${f.get("para")}`); onDone && onDone();
+      } finally { btn.disabled = false; btn.textContent = "Enviar"; }
+  });
+}
+
+function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.append(t); setTimeout(()=>t.remove(),2600); }
+
+async function api(path, opts={}){
+  const o = {method: opts.method||"GET", headers:{}, credentials:"same-origin"};
+  if(opts.body!==undefined){ o.headers["Content-Type"]="application/json"; o.body=JSON.stringify(opts.body); }
+  const r = await fetch(path, o);
+  let data = {}; try{ data = await r.json(); }catch(e){}
+  if(r.status===401 && !path.endsWith("/login")){ ME=null; go("#/login"); throw new Error("Sessão expirada"); }
+  if(r.status===403 && data.trocar_senha){ go("#/senha"); throw new Error(data.erro); }
+  if(!r.ok) throw new Error(data.erro || "Erro inesperado");
+  return data;
+}
+
+/* =================================================================== state */
+let ME = null;
+let EMPRESA = null;
+const isAdmin = () => ME && ME.perfil==="admin";
+const go = h => { if(location.hash===h) route(); else location.hash = h; };
+
+/* =================================================================== document renderer */
+function pillClass(e){ e=(e||"").toLowerCase(); if(e.startsWith("novo"))return"novo"; if(e.startsWith("bom")||e.startsWith("usado"))return"bom"; if(e.startsWith("regular"))return"regular"; if(e.startsWith("danif"))return"danificado"; return""; }
+const fill = (v, w=28) => v ? `<span class="fill">${esc(v)}</span>` : `<span class="fill empty">${"&nbsp;".repeat(w)}</span>`;
+
+/* Catálogo de acessos (botões no formulário) */
+const SISTEMAS = [
+  {id:"rede",   nome:"Computador / Rede - VPN", ic:"🖥️", det:"Computador / VPN",         ph:"Ex.: PC-DP-03 / VPN Barra"},
+  {id:"email",  nome:"E-mail corporativo",      ic:"✉️", det:"Webmail / observação",     ph:"Ex.: outlook.office.com"},
+  {id:"onvio",  nome:"Onvio",                   ic:"☁️", det:"Link / perfil",            ph:"Ex.: onvio.com.br – perfil DP"},
+  {id:"dominio",nome:"Domínio Web",             ic:"📊", det:"Módulos / observação",     ph:"Ex.: Folha, Escrita Fiscal"},
+  {id:"linkus", nome:"Telefonia Linkus",        ic:"☎️", det:"Ramal",                    ph:"Ex.: Ramal 2031"},
+  {id:"pasta",  nome:"Pasta mapeada",           ic:"📁", det:"Caminho / unidade de rede", ph:"Ex.: \\\\servidor\\DP  (Z:)"},
+];
+const TIPO_LABEL = {equipamentos:"Equipamentos", acessos:"Acessos", completo:"Equipamentos + Acessos"};
+const tipoDe = S => S.tipo || (S.incluirAcessos ? "completo" : "equipamentos");
+
+function docHTML(S, numero){
+  const E = Object.assign({}, EMPRESA||{}, S.empresaSnapshot||{});
+  const logo = (EMPRESA && EMPRESA.logo) || "/static/logo.jpg";
+  const tipo = tipoDe(S);
+  const itens = (S.itens||[]).filter(i=>i.item||i.serie||i.obs);
+  const rowsItens = (itens.length?itens:[{},{},{}]).map((it,i)=>`
+    <tr><td class="c">${i+1}</td><td>${esc(it.item)||"&nbsp;"}</td><td>${esc(it.serie)}</td>
+    <td class="c">${it.item?esc(it.qtd):""}</td>
+    <td>${it.item&&it.estado?`<span class="pill ${pillClass(it.estado)}">${esc(it.estado)}</span>`:""}</td><td>${esc(it.obs)}</td></tr>`).join("");
+  const acessos = (S.acessos||[]).filter(a=>a.sistema||a.usuario);
+  const tabelaAcessos = `
+      <table class="items acc"><thead><tr><th style="width:28px">Nº</th><th>Sistema / Serviço</th><th>Usuário / Login</th><th>Detalhe</th><th style="width:22%">Senha provisória</th></tr></thead><tbody>
+      ${(acessos.length?acessos:[{},{},{}]).map((a,i)=>`<tr><td class="c">${i+1}</td><td><b>${esc(a.sistema)||"&nbsp;"}</b></td><td>${esc(a.usuario)}</td>
+        <td>${esc(a.detalhe||a.link)}</td><td>${a.senha?`<span class="mono-doc">${esc(a.senha)}</span>`:`<span class="blank-line"></span>`}</td></tr>`).join("")}
+      </tbody></table>
+      <p class="note">Senhas provisórias não ficam registradas no sistema; quando não impressas, são entregues pessoalmente e devem ser trocadas no primeiro acesso.</p>`;
+  let n = 0; const C = () => `${++n}ª`;
+
+  const head = `
+    <header class="doc-head">
+      <img src="${esc(logo)}" alt="Logo">
+      <div class="meta"><b>${esc(E.empresa)}</b><br>CNPJ ${esc(E.cnpj)}${S.unidade?`<br>Unidade <b>${esc(S.unidade)}</b>`:""}<br><span class="doc-num">${numero?`Termo nº ${esc(numero)}`:"Rascunho – não salvo"}</span></div>
+    </header>`;
+  const sigs = (declaracao) => `
+    <p style="margin-top:14px">${declaracao}</p>
+    <div class="sig-wrap">
+      <div class="place-date">${fill(S.local,30)}, ${fill(dataExtenso(S.data),30)}.</div>
+      <div class="sigs">
+        <div class="sig">
+          <div class="line">${esc(S.nome)||"&nbsp;"}</div>
+          <div class="role">Colaborador(a) – RESPONSÁVEL</div>
+          <dl><dt>CPF:</dt><dd>${esc(S.cpf)||"_____________________"}</dd>${S.cargo?`<dt>Cargo:</dt><dd>${esc(S.cargo)}</dd>`:""}</dl>
+        </div>
+        <div class="sig">
+          <div class="line">${esc(S.recNome)||"&nbsp;"}</div>
+          <div class="role">Entregue por – ${esc(E.empresa)}</div>
+          <dl><dt>Cargo:</dt><dd>${esc(S.recCargo)||"_____________________"}</dd></dl>
+        </div>
+      </div>
+      <div class="obs-box"><b>Observações:</b> ${esc(S.obs).replace(/\n/g,"<br>")}</div>
+    </div>
+    <footer class="doc-foot"><span>${esc(E.empresa)} · CNPJ ${esc(E.cnpj)}${S.unidade?` · Unidade ${esc(S.unidade)}`:""}${numero?` · ${esc(numero)}`:""}</span><span>${esc(E.empContato)}</span></footer>`;
+
+  const clausulasCredenciais = `
+      <ul><li>Utilizar os acessos exclusivamente para atividades relacionadas à EMPRESA;</li>
+      <li>Manter usuário e senha em sigilo — as credenciais são pessoais e intransferíveis;</li>
+      <li>Alterar a senha provisória no primeiro acesso, utilizando senha forte;</li>
+      <li>Não anotar senhas em locais visíveis nem compartilhá-las com terceiros, inclusive colegas;</li>
+      <li>Bloquear o computador ao se ausentar da estação de trabalho;</li>
+      <li>Comunicar imediatamente qualquer suspeita de uso indevido, vazamento ou acesso não autorizado.</li></ul>`;
+
+  /* ---------------- somente ACESSOS (ficha de acessos) ---------------- */
+  if(tipo==="acessos"){
+    return head + `
+    <h2 class="doc-title">TERMO DE RESPONSABILIDADE DE ACESSOS</h2>
+    <p class="doc-sub">Ficha de acessos do colaborador a sistemas e serviços da empresa</p>
+    <div class="ficha">
+      <div><span>Nome</span><b>${esc(S.nome)||"&nbsp;"}</b></div>
+      <div><span>CPF</span><b>${esc(S.cpf)||"&nbsp;"}</b></div>
+      <div><span>Cargo / Setor</span><b>${esc([S.cargo,S.setor].filter(Boolean).join(" · "))||"&nbsp;"}</b></div>
+      <div><span>Unidade</span><b>${esc(S.unidade)||"&nbsp;"}</b></div>
+    </div>
+    <p>Pelo presente instrumento, o(a) colaborador(a) acima identificado(a), doravante denominado(a) <b>RESPONSÁVEL</b>, declara receber da empresa
+    <b>${esc(E.empresa)}</b>, inscrita no CNPJ sob nº ${esc(E.cnpj)}, doravante denominada <b>EMPRESA</b>, os acessos relacionados abaixo, nas condições a seguir.</p>
+
+    <section class="clause"><h3>Cláusula ${C()} – Acessos fornecidos</h3>${tabelaAcessos}</section>
+    <section class="clause"><h3>Cláusula ${C()} – Responsabilidades do(a) responsável</h3><p>O(a) RESPONSÁVEL compromete-se a:</p>${clausulasCredenciais}</section>
+    <section class="clause"><h3>Cláusula ${C()} – Confidencialidade e proteção de dados</h3>
+      <p>As informações acessadas — inclusive dados de clientes, colaboradores e documentos fiscais, contábeis e trabalhistas — são confidenciais e devem ser tratadas conforme a Lei Geral de Proteção de Dados (Lei nº 13.709/2018) e as normas internas da EMPRESA, sendo vedada sua cópia, divulgação ou uso para fins pessoais, sob pena de responsabilidade civil, trabalhista e/ou criminal.</p></section>
+    <section class="clause"><h3>Cláusula ${C()} – Monitoramento</h3>
+      <p>O(a) RESPONSÁVEL está ciente de que os sistemas, e-mails, telefonia e recursos de rede são ferramentas de trabalho de propriedade da EMPRESA e podem ser monitorados para fins de segurança e conformidade.</p></section>
+    <section class="clause"><h3>Cláusula ${C()} – Revogação dos acessos</h3>
+      <p>Os acessos poderão ser alterados ou revogados a qualquer tempo e serão obrigatoriamente cancelados no término do vínculo ou mudança de função, sendo vedada qualquer tentativa de acesso posterior.</p></section>
+    ${sigs("Declaro que recebi meus acessos e estou ciente da responsabilidade sobre o uso adequado das informações e sistemas da empresa.")}`;
+  }
+
+  /* ---------------- EQUIPAMENTOS (e COMPLETO = equipamentos + acessos) ---------------- */
+  const completo = tipo==="completo";
+  const c1=C(), c2=C(), c3 = completo?C():null;
+  return head + `
+    <h2 class="doc-title">${completo?"TERMO DE RESPONSABILIDADE POR EQUIPAMENTOS E ACESSOS":"TERMO DE RESPONSABILIDADE POR EQUIPAMENTOS"}</h2>
+    <p class="doc-sub">${completo?"Instrumento de entrega de bens e de acessos a sistemas":"Instrumento de entrega, guarda e devolução de bens"}</p>
+
+    <p>Pelo presente instrumento, eu ${fill(S.nome,40)}, portador(a) do CPF nº ${fill(S.cpf,20)} e RG nº ${fill(S.rg,20)},
+    residente à ${fill(S.endereco,50)}${S.cargo||S.setor?`, ocupante do cargo de ${fill(S.cargo,20)}${S.setor?` no setor ${fill(S.setor)}`:""}`:""}${S.unidade?`, lotado(a) na unidade ${fill(S.unidade)}`:""},
+    doravante denominado(a) <b>RESPONSÁVEL</b>, declaro estar ciente das condições e responsabilidades referentes ao uso e conservação dos bens${completo?" e acessos":""}
+    fornecidos pela empresa <b>${esc(E.empresa)}</b>, inscrita no CNPJ sob nº ${esc(E.cnpj)}, com sede em ${esc(E.empEndereco)},
+    doravante denominada <b>EMPRESA</b>.</p>
+
+    <section class="clause"><h3>Cláusula ${c1} – Objeto</h3>
+      <p>O presente termo formaliza a responsabilidade do(a) RESPONSÁVEL pelo uso, guarda, conservação e devolução dos bens fornecidos pela EMPRESA, incluindo equipamentos, materiais, ferramentas e documentos${completo?", bem como pelo uso dos acessos a sistemas e serviços corporativos":""}.</p></section>
+
+    <section class="clause"><h3>Cláusula ${c2} – Registro dos itens</h3>
+      <p>O(a) RESPONSÁVEL declara estar recebendo os seguintes itens sob sua responsabilidade:</p>
+      <table class="items"><thead><tr><th style="width:28px">Nº</th><th>Item / Equipamento</th><th>Patrimônio / Nº de série</th><th style="width:40px">Qtd.</th><th>Estado</th><th>Observações</th></tr></thead>
+      <tbody>${rowsItens}</tbody></table></section>
+
+    ${completo?`<section class="clause"><h3>Cláusula ${c3} – Acessos e credenciais</h3>
+      <p>Além dos bens acima, o(a) RESPONSÁVEL recebe os seguintes acessos, de uso pessoal e intransferível:</p>${tabelaAcessos}
+      <p>Quanto aos acessos, o(a) RESPONSÁVEL compromete-se a:</p>${clausulasCredenciais}</section>`:""}
+
+    <section class="clause"><h3>Cláusula ${C()} – Responsabilidades do(a) responsável</h3>
+      <p>O(a) RESPONSÁVEL compromete-se a:</p>
+      <ul><li>Utilizar os bens exclusivamente para atividades relacionadas à EMPRESA;</li>
+      <li>Zelar pela conservação e bom estado dos equipamentos;</li>
+      <li>Não ceder, transferir ou emprestar os bens a terceiros sem autorização expressa da EMPRESA;</li>
+      <li>Comunicar imediatamente qualquer dano, perda, furto ou mau funcionamento;</li>
+      <li>Devolver os bens nas mesmas condições em que foram recebidos, considerando desgaste natural;</li>
+      <li>Cumprir normas internas de segurança, confidencialidade e operação dos bens.</li></ul></section>
+
+    <section class="clause"><h3>Cláusula ${C()} – Responsabilidade por danos</h3>
+      <p>O(a) RESPONSÁVEL poderá ser responsabilizado(a) por danos, perdas ou extravios resultantes de:</p>
+      <ul><li>Uso inadequado ou negligente;</li><li>Descumprimento das normas internas;</li><li>Perda ou extravio por ação ou omissão do(a) RESPONSÁVEL.</li></ul>
+      <p>O ressarcimento será calculado pelo valor de reposição ou reparo do item.</p></section>
+
+    <section class="clause"><h3>Cláusula ${C()} – Devolução dos bens${completo?" e revogação dos acessos":""}</h3>
+      <p>A devolução dos bens deverá ocorrer:</p>
+      <ul><li>No término do vínculo com a EMPRESA;</li><li>Quando solicitado formalmente;</li><li>Com todos os acessórios, manuais e documentos;</li><li>Em perfeitas condições de uso, considerando desgaste natural.</li></ul>
+      ${completo?"<p>Os acessos serão revogados no término do vínculo ou mudança de função, sendo vedada qualquer tentativa de acesso posterior.</p>":""}</section>
+
+    <section class="clause"><h3>Cláusula ${C()} – Confidencialidade</h3>
+      <p>O(a) RESPONSÁVEL compromete-se a não divulgar informações confidenciais obtidas em razão do uso dos bens${completo?" e sistemas, observando a Lei Geral de Proteção de Dados (Lei nº 13.709/2018)":""}, sob pena de responsabilidade civil e/ou criminal.</p></section>
+
+    <section class="clause"><h3>Cláusula ${C()} – Vigência</h3>
+      <p>O presente termo entra em vigor na data de assinatura e permanecerá válido enquanto o(a) RESPONSÁVEL estiver utilizando os bens da EMPRESA, inclusive até a completa devolução.</p></section>
+
+    <section class="clause"><h3>Cláusula ${C()} – Não devolução</h3>
+      <p>O(a) RESPONSÁVEL reconhece que os bens listados neste termo são propriedade exclusiva da EMPRESA. A não devolução ou apropriação dos bens sem autorização expressa da EMPRESA poderá caracterizar apropriação indébita, nos termos da legislação vigente, sujeitando o(a) RESPONSÁVEL às medidas civis e criminais cabíveis, além do ressarcimento integral do valor dos bens.</p>
+      <p><b>Parágrafo único:</b> A EMPRESA fará notificação (e-mail, mensagem) antes de acionar quaisquer medidas legais.</p></section>
+    ${sigs(`E por estarem as partes assim pactuadas, firmam o presente termo de responsabilidade, declarando o(a) RESPONSÁVEL que recebeu os itens listados na Cláusula ${c2}${completo?` e os acessos listados na Cláusula ${c3}`:""}.`)}`;
+}
+
+/* =================================================================== router */
+window.addEventListener("hashchange", route);
+
+async function route(){
+  const h = location.hash || "#/termos";
+  if(!ME && h!=="#/login"){ return go("#/login"); }
+  if(ME && ME.trocar_senha && h!=="#/senha" && h!=="#/login") return go("#/senha");
+  $("#topbar").hidden = !ME || h==="#/login";
+  if(ME){
+    $("#who").innerHTML = `<b>${esc(ME.nome)}</b>${ME.perfil==="admin"?"Administrador":"Usuário"}`;
+    $$("[data-admin]").forEach(a=>a.hidden=!isAdmin());
+    $$("#nav a").forEach(a=>a.classList.toggle("on", h.startsWith("#/"+a.dataset.r)));
+  }
+  window.scrollTo(0,0);
+  try{
+    let m;
+    if(h==="#/login") return viewLogin();
+    if(h==="#/senha") return viewSenha(true);
+    if(!EMPRESA) EMPRESA = await api("/api/empresa");
+    if(h==="#/termos") return viewLista();
+    if(h==="#/novo") return viewEditor(null);
+    if((m=h.match(/^#\/termo\/(\d+)\/editar$/))) return viewEditor(+m[1]);
+    if((m=h.match(/^#\/termo\/(\d+)$/))) return viewTermo(+m[1]);
+    if(h==="#/usuarios" && isAdmin()) return viewUsuarios();
+    if(h==="#/empresa" && isAdmin()) return viewEmpresa();
+    go("#/termos");
+  }catch(e){ if(e.message) toast(e.message); }
+}
+
+/* =================================================================== login */
+function viewLogin(){
+  root.innerHTML = `
+  <div class="login-wrap"><div class="card login">
+    <img src="/static/logo.jpg" alt="Valorização Assessoria Contábil">
+    <h2>Termos de Responsabilidade</h2>
+    <p class="sub">Entre com seu usuário para continuar</p>
+    <form id="fLogin">
+      <label class="f">Login<input name="login" autocomplete="username" required autofocus></label>
+      <label class="f">Senha<input name="senha" type="password" autocomplete="current-password" required></label>
+      <p class="err" id="lErr"></p>
+      <button class="btn primary" style="justify-content:center">Entrar</button>
+    </form>
+  </div></div>`;
+  $("#fLogin").onsubmit = async e=>{
+    e.preventDefault(); const f = new FormData(e.target);
+    try{
+      const r = await api("/api/login",{method:"POST",body:{login:f.get("login"),senha:f.get("senha")}});
+      ME = r.user; EMPRESA = null;
+      go(ME.trocar_senha ? "#/senha" : "#/termos");
+    }catch(err){ $("#lErr").textContent = err.message; }
+  };
+}
+
+function senhaForm(obrig){
+  return `
+    <h3>${obrig?"Defina sua nova senha":"Alterar minha senha"}</h3>
+    ${obrig?`<p class="hint">Por segurança, troque a senha provisória antes de usar o sistema.</p>`:""}
+    <label class="f">Senha atual<input name="atual" type="password" autocomplete="current-password" required></label>
+    <label class="f">Nova senha (mín. 8 caracteres)<input name="nova" type="password" minlength="8" autocomplete="new-password" required></label>
+    <label class="f">Confirmar nova senha<input name="conf" type="password" minlength="8" autocomplete="new-password" required></label>
+    <p class="err" data-err></p>`;
+}
+async function enviarSenha(form){
+  const f = new FormData(form);
+  if(f.get("nova")!==f.get("conf")) throw new Error("As senhas não conferem");
+  await api("/api/me/senha",{method:"POST",body:{atual:f.get("atual"),nova:f.get("nova")}});
+}
+function viewSenha(){
+  root.innerHTML = `<div class="login-wrap"><div class="card login"><img src="/static/logo.jpg" alt="">
+    <form id="fS">${senhaForm(true)}<button class="btn primary" style="justify-content:center">Salvar nova senha</button>
+    <button type="button" class="btn ghost" id="sOut" style="justify-content:center">Sair</button></form></div></div>`;
+  $("#sOut").onclick = sair;
+  $("#fS").onsubmit = async e=>{
+    e.preventDefault();
+    try{ await enviarSenha(e.target); ME.trocar_senha=false; toast("Senha alterada"); go("#/termos"); }
+    catch(err){ $("[data-err]",e.target).textContent = err.message; }
+  };
+}
+
+async function sair(){ try{ await api("/api/logout",{method:"POST",body:{}}); }catch(e){} ME=null; EMPRESA=null; go("#/login"); }
+$("#btnSair").onclick = sair;
+$("#btnSenha").onclick = ()=> openDialog(senhaForm(false), "Salvar", async form=>{ await enviarSenha(form); toast("Senha alterada"); });
+
+/* =================================================================== dialog helper */
+function openDialog(inner, okLabel, onOk){
+  const dlg = $("#dlg"), form = $("#dlgForm");
+  form.innerHTML = inner + `<div class="dlg-actions"><button type="button" class="btn ghost" data-x>Cancelar</button><button class="btn primary" data-ok>${esc(okLabel)}</button></div>`;
+  $("[data-x]",form).onclick = ()=>dlg.close();
+  form.onsubmit = async e=>{
+    e.preventDefault();
+    try{ await onOk(form); dlg.close(); }catch(err){ const el=$("[data-err]",form); if(el) el.textContent=err.message; else toast(err.message); }
+  };
+  dlg.showModal();
+}
+
+/* =================================================================== lista */
+async function viewLista(){
+  const params = new URLSearchParams(location.hash.split("?")[1]||"");
+  root.innerHTML = `
+  <div class="page">
+    <div class="page-head"><div><h2>Termos de responsabilidade</h2><p>Consulte, imprima e acompanhe as devoluções</p></div>
+      <span class="sp"></span><a class="btn primary" href="#/novo">+ Novo termo</a></div>
+    <div class="unit-tabs" id="unitTabs"></div>
+    <div class="stats" id="stats"></div>
+    <div class="card">
+      <div class="filters">
+        <input class="input" id="q" placeholder="Buscar por colaborador, CPF, nº do termo, equipamento ou sistema…">
+        <select class="input" id="tp"><option value="">Todos os tipos</option><option value="equipamentos">💻 Equipamentos</option><option value="acessos">🔑 Acessos</option><option value="completo">🧩 Equipamentos + Acessos</option></select>
+        <select class="input" id="st"><option value="">Todos os status</option><option value="ativo">Ativos</option><option value="devolvido">Devolvidos</option><option value="cancelado">Cancelados</option></select>
+      </div>
+      <div id="tbl"></div>
+    </div>
+  </div>`;
+  let unidade = sessionStorage.getItem("filtro-unidade") || "";
+  const UNIDADES = (EMPRESA && EMPRESA.unidades) || [];
+  if(unidade && !UNIDADES.includes(unidade)) unidade = "";
+  const load = async ()=>{
+    const q = $("#q").value.trim(), st = $("#st").value, tp = $("#tp").value;
+    const r = await api(`/api/termos?q=${encodeURIComponent(q)}&status=${st}&tipo=${tp}&unidade=${encodeURIComponent(unidade)}`);
+    const pu = r.por_unidade||{}; const totAtivos = Object.values(pu).reduce((a,b)=>a+b,0);
+    $("#unitTabs").innerHTML = UNIDADES.length ? [["","🏢 Todas as unidades",totAtivos], ...UNIDADES.map(u=>[u,`📍 ${u}`,pu[u]||0])]
+      .map(([v,l,n])=>`<button class="unit-tab ${v===unidade?"on":""}" data-u="${esc(v)}">${esc(l)}<span class="n" title="termos ativos">${n}</span></button>`).join("") : "";
+    $$("#unitTabs .unit-tab").forEach(b=>b.onclick=()=>{ unidade=b.dataset.u; sessionStorage.setItem("filtro-unidade", unidade); load(); });
+    const c = r.contagem||{}; const tot = (c.ativo||0)+(c.devolvido||0)+(c.cancelado||0);
+    $("#stats").innerHTML = [["Total",tot],["Ativos",c.ativo||0],["Devolvidos",c.devolvido||0],["Cancelados",c.cancelado||0]]
+      .map(([l,n])=>`<div class="card stat"><div class="n">${n}</div><div class="l">${l}${unidade?` · ${esc(unidade)}`:""}</div></div>`).join("");
+    $("#tbl").innerHTML = r.termos.length ? `
+      <table class="list"><thead><tr><th>Nº</th><th>Colaborador</th><th>Tipo</th><th class="hide-sm">Unidade</th><th class="hide-sm">Conteúdo</th><th>Status</th><th class="hide-sm">Criado em</th></tr></thead><tbody>
+      ${r.termos.map(t=>`<tr class="click" data-id="${t.id}">
+        <td class="mono">${esc(t.numero)}</td><td><b>${esc(t.colaborador)||"<i>(sem nome)</i>"}</b><div class="hint">${esc(t.cpf)}</div></td>
+        <td><span class="badge t-${t.tipo}">${TIPO_LABEL[t.tipo]||t.tipo}</span></td>
+        <td class="hide-sm">${t.unidade?esc(t.unidade):"—"}</td>
+        <td class="hide-sm">${[t.qtd_itens?`💻 ${t.qtd_itens} ${t.qtd_itens>1?"itens":"item"}`:"", t.qtd_acessos?`🔑 ${t.qtd_acessos} ${t.qtd_acessos>1?"acessos":"acesso"}`:""].filter(Boolean).join(" · ")||"—"}</td>
+        <td><span class="badge ${t.status}">${STATUS_LABEL[t.status]}</span></td>
+        <td class="hide-sm">${fmtD(t.criado_em)}<div class="hint">${esc(t.criado_por_nome)||""}</div></td></tr>`).join("")}
+      </tbody></table>` : `<div class="empty">${q||st||tp||unidade?"Nenhum termo encontrado com esse filtro.":"Nenhum termo cadastrado ainda. Clique em <b>+ Novo termo</b> para começar."}</div>`;
+    $$("#tbl tr[data-id]").forEach(tr=>tr.onclick=()=>go(`#/termo/${tr.dataset.id}`));
+  };
+  let t; $("#q").oninput = ()=>{ clearTimeout(t); t=setTimeout(load,250); };
+  $("#st").onchange = load; $("#tp").onchange = load;
+  if(params.get("q")) $("#q").value = params.get("q");
+  await load();
+}
+
+/* =================================================================== editor */
+const NOVO = () => ({
+  tipo:"equipamentos", unidade:"",
+  nome:"",cpf:"",rg:"",endereco:"",email:"",cargo:"",setor:"",
+  local:(EMPRESA&&EMPRESA.local)||"", data:hoje(), recNome:ME?ME.nome:"", recCargo:"", obs:"",
+  itens:[{item:"",serie:"",qtd:1,estado:"Novo",obs:""}],
+  acessos:[]
+});
+const DRAFT_KEY = "termo-rascunho";
+const sem_acento = s => (s||"").normalize("NFD").replace(/[̀-ͯ]/g,"");
+function loginPadrao(nome){
+  const p = sem_acento(nome).toLowerCase().replace(/[^a-z\s]/g,"").split(/\s+/).filter(x=>x && !["da","de","do","das","dos","e"].includes(x));
+  return p.length ? (p.length>1 ? `${p[0]}.${p[p.length-1]}` : p[0]) : "";
+}
+function gerarSenha(){
+  const A="ABCDEFGHJKLMNPQRSTUVWXYZ", a="abcdefghijkmnpqrstuvwxyz", d="23456789", s="@#*!$";
+  const r = n => { const b=new Uint32Array(1); crypto.getRandomValues(b); return b[0]%n; };
+  const pick = set => set[r(set.length)];
+  let out = pick(A)+pick(a)+pick(s)+pick(d)+pick(d)+pick(d)+pick(a)+pick(A)+pick(s);
+  return out;
+}
+
+async function viewEditor(id){
+  let S, numero=null;
+  if(id){ const t = await api(`/api/termos/${id}`); S = Object.assign(NOVO(), t.dados); numero = t.numero; }
+  else{
+    S = NOVO();
+    try{ const d = JSON.parse(localStorage.getItem(DRAFT_KEY)||"null"); if(d && (d.nome||d.itens?.some(i=>i.item)||d.acessos?.length)) S = Object.assign(S,d); }catch(e){}
+  }
+  S.tipo = tipoDe(S); delete S.incluirAcessos;
+  S.acessos = (S.acessos||[]).filter(a=>a.sistema||a.usuario).map(a=>({sid:a.sid||"", sistema:a.sistema||"", usuario:a.usuario||"", detalhe:a.detalhe||a.link||"", senha:a.senha||""}));
+  const UNIDADES = (EMPRESA && EMPRESA.unidades) || [];
+
+  root.innerHTML = `
+  <div class="editor">
+    <aside class="form">
+      <div class="form-actions">
+        <a class="btn ghost small" href="${id?`#/termo/${id}`:"#/termos"}">← Voltar</a><span class="sp"></span>
+        ${id?"":`<button class="btn small ghost" id="btnLimpar">Limpar</button>`}
+        <button class="btn primary" id="btnSalvar">${id?"Salvar alterações":"Salvar termo"}</button>
+      </div>
+
+      <div class="tipo-pick" id="tipoPick">
+        ${[["equipamentos","💻","Equipamentos","Notebook, monitor, celular…"],["acessos","🔑","Acessos","Ficha de sistemas e logins"],["completo","🧩","Junto","Equipamentos + acessos"]]
+          .map(([v,ic,t,d])=>`<button type="button" class="tipo-opt" data-tipo="${v}"><span class="ic">${ic}</span><b>${t}</b><small>${d}</small></button>`).join("")}
+      </div>
+
+      <label class="send-opt"><input type="checkbox" id="chkEnviar" ${id?"":"checked"}> Enviar a via do termo para o e-mail do colaborador ao salvar</label>
+
+      <details class="sec" open><summary><span class="num">1</span>Colaborador(a) e unidade</summary><div class="body">
+        ${UNIDADES.length?`<div><div class="lbl">Unidade</div><div class="chips" id="unidPick">
+          ${UNIDADES.map(u=>`<button type="button" class="chip" data-un="${esc(u)}">📍 ${esc(u)}</button>`).join("")}</div></div>`:""}
+        <label class="f">Nome completo<input data-k="nome" placeholder="Ex.: Maria da Silva"></label>
+        <div class="row"><label class="f">CPF<input data-k="cpf" data-mask="cpf" placeholder="000.000.000-00" inputmode="numeric"></label>
+          <label class="f">RG<input data-k="rg" placeholder="00.000.000-0"></label></div>
+        <label class="f" data-only="eq">Endereço<input data-k="endereco" placeholder="Rua, nº, bairro, cidade - UF"></label>
+        <label class="f">E-mail pessoal (para receber a via do termo)<input data-k="email" type="email" placeholder="nome@exemplo.com"></label>
+        <div class="row"><label class="f">Cargo / Função<input data-k="cargo"></label><label class="f">Setor<input data-k="setor"></label></div>
+      </div></details>
+
+      <details class="sec" open data-only="eq"><summary><span class="num">2</span>Itens entregues</summary><div class="body">
+        <div id="itemsForm" style="display:grid;gap:10px"></div>
+        <button class="btn small" id="btnAddItem" type="button">+ Adicionar item</button>
+      </div></details>
+
+      <details class="sec" open data-only="acc"><summary><span class="num">3</span>Acessos fornecidos</summary><div class="body">
+        <div class="lbl">Selecione os acessos entregues</div>
+        <div class="sys-grid" id="sysGrid">
+          ${SISTEMAS.map(s=>`<button type="button" class="sys" data-sid="${s.id}"><span class="ic">${s.ic}</span><span>${esc(s.nome)}</span><i class="ck">✓</i></button>`).join("")}
+          <button type="button" class="sys outro" id="btnOutro"><span class="ic">＋</span><span>Outro acesso</span></button>
+        </div>
+        <div class="acc-tools"><button type="button" class="btn small" id="btnLogins">✨ Preencher logins pelo nome</button>
+          <button type="button" class="btn small" id="btnSenhas">🔐 Gerar senhas provisórias</button></div>
+        <div id="accForm" style="display:grid;gap:10px"></div>
+        <p class="hint">🔒 As senhas provisórias aparecem só na impressão feita agora — <b>não são gravadas</b> no sistema nem enviadas por e-mail.</p>
+      </div></details>
+
+      <details class="sec" open><summary><span class="num">4</span>Assinaturas, local e data</summary><div class="body">
+        <div class="row"><label class="f">Local<input data-k="local"></label><label class="f">Data<input type="date" data-k="data"></label></div>
+        <div class="row"><label class="f">Entregue por (nome)<input data-k="recNome"></label><label class="f">Cargo<input data-k="recCargo"></label></div>
+        <label class="f">Observações<textarea data-k="obs"></textarea></label>
+      </div></details>
+      <p class="hint">${id?"As alterações ficam registradas no histórico do termo.":"O rascunho fica guardado neste navegador até você salvar (sem as senhas)."}</p>
+    </aside>
+    <main class="preview"><article class="sheet" id="doc"></article></main>
+  </div>`;
+
+  const salvarRascunho = ()=>{ if(id) return; try{ const c = JSON.parse(JSON.stringify(S)); c.acessos.forEach(a=>delete a.senha); localStorage.setItem(DRAFT_KEY, JSON.stringify(c)); }catch(e){} };
+  const update = ()=>{ $("#doc").innerHTML = docHTML(S, numero); salvarRascunho(); };
+  const aplicaTipo = ()=>{
+    $$("#tipoPick .tipo-opt").forEach(b=>b.classList.toggle("on", b.dataset.tipo===S.tipo));
+    $$("[data-only=eq]").forEach(el=>el.hidden = S.tipo==="acessos");
+    $$("[data-only=acc]").forEach(el=>el.hidden = S.tipo==="equipamentos");
+  };
+  const aplicaUnidade = ()=> $$("#unidPick .chip").forEach(b=>b.classList.toggle("on", b.dataset.un===S.unidade));
+  const bind = ()=> $$("[data-k]").forEach(el=>{
+    const k=el.dataset.k; el.value=S[k]??"";
+    el.oninput = ()=>{ if(el.dataset.mask==="cpf") el.value=maskCPF(el.value); S[k] = el.value; update(); };
+  });
+  const itemsForm = ()=>{
+    const box=$("#itemsForm");
+    box.innerHTML = S.itens.map((it,i)=>`
+      <div class="item-card"><span class="idx">Item ${i+1}</span>
+        ${S.itens.length>1?`<button type="button" class="btn small ghost rm" data-rm="${i}" title="Remover">✕</button>`:""}
+        <label class="f">Item / Equipamento<input data-i="${i}" data-f="item" value="${esc(it.item)}" placeholder="Ex.: Notebook Dell"></label>
+        <div class="row3">
+          <label class="f">Patrimônio / Nº série<input data-i="${i}" data-f="serie" value="${esc(it.serie)}" placeholder="PT 0195 ou S/N"></label>
+          <label class="f">Qtd.<input type="number" min="1" data-i="${i}" data-f="qtd" value="${esc(it.qtd)}"></label>
+          <label class="f">Estado<select data-i="${i}" data-f="estado">${ESTADOS.map(e=>`<option ${e===it.estado?"selected":""}>${e}</option>`).join("")}</select></label>
+        </div>
+        <label class="f">Observações<input data-i="${i}" data-f="obs" value="${esc(it.obs)}" placeholder="Ex.: acompanha carregador"></label>
+      </div>`).join("");
+    $$("[data-f]",box).forEach(el=>el.oninput=()=>{ S.itens[el.dataset.i][el.dataset.f]=el.value; update(); });
+    $$("[data-rm]",box).forEach(b=>b.onclick=()=>{ S.itens.splice(+b.dataset.rm,1); itemsForm(); update(); });
+  };
+  const catalogo = sid => SISTEMAS.find(s=>s.id===sid);
+  const accForm = ()=>{
+    $$("#sysGrid .sys[data-sid]").forEach(b=>b.classList.toggle("on", S.acessos.some(a=>a.sid===b.dataset.sid)));
+    const box=$("#accForm");
+    box.innerHTML = S.acessos.length ? S.acessos.map((a,i)=>{ const c = catalogo(a.sid); return `
+      <div class="item-card acc-card"><span class="idx">${c?c.ic+" ":""}${esc(c?c.nome:(a.sistema||"Outro acesso"))}</span>
+        <button type="button" class="btn small ghost rm" data-rma="${i}" title="Remover">✕</button>
+        ${c?"":`<label class="f">Sistema / Serviço<input data-a="${i}" data-f="sistema" value="${esc(a.sistema)}" placeholder="Ex.: Zap Contábil"></label>`}
+        <div class="row"><label class="f">Usuário / Login<input data-a="${i}" data-f="usuario" value="${esc(a.usuario)}" placeholder="${a.sid==="email"?"nome.sobrenome@empresa.com":a.sid==="linkus"?"(opcional)":"nome.sobrenome"}"></label>
+          <label class="f">${esc(c?c.det:"Detalhe")}<input data-a="${i}" data-f="detalhe" value="${esc(a.detalhe)}" placeholder="${esc(c?c.ph:"Link, observação…")}"></label></div>
+        <label class="f">Senha provisória (não é salva)<div class="pw"><input data-a="${i}" data-f="senha" value="${esc(a.senha)}" autocomplete="off" spellcheck="false" placeholder="Opcional — em branco sai uma linha para preencher à mão"><button type="button" class="btn small" data-gen="${i}" title="Gerar senha">🎲</button></div></label>
+      </div>`; }).join("") : `<div class="empty-acc">Toque nos acessos acima para adicioná-los ao termo.</div>`;
+    $$("[data-f]",box).forEach(el=>el.oninput=()=>{ S.acessos[el.dataset.a][el.dataset.f]=el.value; if(el.dataset.f==="sistema") S.acessos[el.dataset.a].sid=""; update(); });
+    $$("[data-rma]",box).forEach(b=>b.onclick=()=>{ S.acessos.splice(+b.dataset.rma,1); accForm(); update(); });
+    $$("[data-gen]",box).forEach(b=>b.onclick=()=>{ S.acessos[b.dataset.gen].senha=gerarSenha(); accForm(); update(); });
+  };
+  bind(); itemsForm(); accForm(); aplicaTipo(); aplicaUnidade(); update();
+
+  $$("#tipoPick .tipo-opt").forEach(b=>b.onclick=()=>{ S.tipo=b.dataset.tipo; aplicaTipo(); update(); });
+  $$("#unidPick .chip").forEach(b=>b.onclick=()=>{ S.unidade = S.unidade===b.dataset.un ? "" : b.dataset.un; aplicaUnidade(); update(); });
+  $$("#sysGrid .sys[data-sid]").forEach(b=>b.onclick=()=>{
+    const sid=b.dataset.sid, i=S.acessos.findIndex(a=>a.sid===sid);
+    if(i>=0) S.acessos.splice(i,1);
+    else S.acessos.push({sid, sistema:catalogo(sid).nome, usuario:"", detalhe:"", senha:""});
+    accForm(); update();
+  });
+  $("#btnOutro").onclick = ()=>{ S.acessos.push({sid:"", sistema:"", usuario:"", detalhe:"", senha:""}); accForm(); update(); $$("#accForm [data-f=sistema]").pop()?.focus(); };
+  $("#btnLogins").onclick = ()=>{
+    const login = loginPadrao(S.nome); if(!login){ toast("Preencha o nome do colaborador primeiro"); return; }
+    const dom = (EMPRESA && EMPRESA.dominioEmail) || "";
+    const primeiro = sem_acento(S.nome.trim().split(/\s+/)[0]||"").toUpperCase();
+    S.acessos.forEach(a=>{ if(a.usuario) return;
+      if(a.sid==="email") a.usuario = dom ? `${login}@${dom}` : login;
+      else if(a.sid==="dominio") a.usuario = primeiro;
+      else if(a.sid==="linkus" || a.sid==="pasta") return;
+      else a.usuario = login; });
+    accForm(); update(); toast("Logins sugeridos — confira antes de salvar");
+  };
+  $("#btnSenhas").onclick = ()=>{ S.acessos.forEach(a=>{ if(!a.senha && a.sid!=="pasta") a.senha=gerarSenha(); }); accForm(); update(); };
+  $("#btnAddItem").onclick = ()=>{ S.itens.push({item:"",serie:"",qtd:1,estado:"Novo",obs:""}); itemsForm(); update(); };
+  if($("#btnLimpar")) $("#btnLimpar").onclick = ()=>{ if(confirm("Limpar o formulário?")){ localStorage.removeItem(DRAFT_KEY); viewEditor(null); } };
+  $("#btnSalvar").onclick = async ()=>{
+    if(!S.nome.trim()){ toast("Informe o nome do colaborador"); $("[data-k=nome]").focus(); return; }
+    if(UNIDADES.length && !S.unidade){ toast("Selecione a unidade"); return; }
+    if(S.tipo!=="acessos" && !S.itens.some(i=>i.item.trim())){ toast("Adicione pelo menos um item"); return; }
+    if(S.tipo!=="equipamentos" && !S.acessos.some(a=>a.sistema.trim())){ toast("Selecione pelo menos um acesso"); return; }
+    const enviar = $("#chkEnviar").checked;
+    if(enviar && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(S.email||"")){ toast("Informe o e-mail do colaborador ou desmarque o envio"); $("[data-k=email]").focus(); return; }
+    const btn=$("#btnSalvar"); btn.disabled=true;
+    try{
+      if(!S.empresaSnapshot) S.empresaSnapshot = {empresa:EMPRESA.empresa,cnpj:EMPRESA.cnpj,empEndereco:EMPRESA.empEndereco,empContato:EMPRESA.empContato};
+      const dados = JSON.parse(JSON.stringify(S));
+      if(dados.tipo==="acessos") dados.itens = [];
+      if(dados.tipo==="equipamentos") dados.acessos = [];
+      let tid = id;
+      if(id){ await api(`/api/termos/${id}`,{method:"PUT",body:{dados}}); toast("Alterações salvas"); }
+      else{ const r = await api("/api/termos",{method:"POST",body:{dados}}); tid = r.id; localStorage.removeItem(DRAFT_KEY); toast(`Termo ${r.numero} salvo`); }
+      // senhas ficam só nesta aba, para imprimir logo em seguida
+      const senhas = dados.acessos.map(a=>a.senha||"");
+      if(senhas.some(Boolean)) sessionStorage.setItem(`senhas-${tid}`, JSON.stringify(senhas)); else sessionStorage.removeItem(`senhas-${tid}`);
+      if(enviar) sessionStorage.setItem("enviar-termo", String(tid));
+      go(`#/termo/${tid}`);
+    }catch(e){ toast(e.message); btn.disabled=false; }
+  };
+}
+
+/* =================================================================== visualizar */
+async function viewTermo(id){
+  const t = await api(`/api/termos/${id}`);
+  document.title = `${t.numero} – ${t.colaborador}`;
+  // senhas digitadas ao salvar: só nesta aba, só para impressão (t.dados continua sem senha → e-mail sem senha)
+  let senhas = []; try{ senhas = JSON.parse(sessionStorage.getItem(`senhas-${id}`)||"[]"); }catch(e){}
+  const temSenhas = senhas.some(Boolean);
+  const dadosImpressao = JSON.parse(JSON.stringify(t.dados));
+  (dadosImpressao.acessos||[]).forEach((a,i)=>{ if(senhas[i]) a.senha = senhas[i]; });
+  root.innerHTML = `
+  <div class="view">
+    <div class="preview" style="padding:0"><article class="sheet">${docHTML(dadosImpressao, t.numero)}</article></div>
+    <aside class="side">
+      ${temSenhas?`<div class="senha-aviso noprint">🔐 As senhas provisórias aparecem nesta impressão, mas <b>não foram salvas</b>. Imprima agora — ao sair desta tela elas somem. <button class="btn small" id="aOcultar" style="margin-top:6px">Ocultar senhas</button></div>`:""}
+      <div class="card">
+        <h4>Termo ${esc(t.numero)}</h4>
+        <dl class="kv">
+          <dt>Status</dt><dd><span class="badge ${t.status}">${STATUS_LABEL[t.status]}</span></dd>
+          <dt>Tipo</dt><dd><span class="badge t-${t.tipo}">${TIPO_LABEL[t.tipo]||t.tipo}</span></dd>
+          ${t.unidade?`<dt>Unidade</dt><dd>📍 ${esc(t.unidade)}</dd>`:""}
+          <dt>Colaborador</dt><dd>${esc(t.colaborador)}</dd>
+          ${t.dados.email?`<dt>E-mail</dt><dd style="word-break:break-all">${esc(t.dados.email)}</dd>`:""}
+          <dt>Criado</dt><dd>${fmtDT(t.criado_em)}</dd>
+          <dt>Por</dt><dd>${esc(t.criado_por_nome)||"—"}</dd>
+          ${t.devolvido_em?`<dt>Devolvido</dt><dd>${fmtDT(t.devolvido_em)}</dd>`:""}
+        </dl>
+      </div>
+      <div class="card actions">
+        <button class="btn primary" id="aPrint">Imprimir / Salvar PDF</button>
+        <button class="btn" id="aEmail">Enviar por e-mail</button>
+        <a class="btn" href="#/termo/${id}/editar">Editar</a>
+        ${t.status==="ativo"?`<button class="btn" id="aDev">${t.tipo==="acessos"?"Registrar revogação dos acessos":"Registrar devolução"}</button>`:`<button class="btn" id="aReat">Reativar termo</button>`}
+        ${t.status==="ativo"?`<button class="btn ghost" id="aCanc">Cancelar termo</button>`:""}
+        <button class="btn ghost" id="aDup">Duplicar para outro colaborador</button>
+        ${isAdmin()?`<button class="btn ghost danger" id="aDel">Excluir definitivamente</button>`:""}
+        <a class="btn ghost" href="#/termos">← Voltar à lista</a>
+      </div>
+      <div class="card"><h4>Histórico</h4><ul class="timeline">
+        ${t.historico.map(h=>`<li><b>${esc(h.acao)}</b>${h.detalhe?` – ${esc(h.detalhe)}`:""}<div class="w">${fmtDT(h.quando)} · ${esc(h.nome)||"—"}</div></li>`).join("")}
+      </ul></div>
+    </aside>
+  </div>`;
+  $("#aPrint").onclick = ()=>window.print();
+  if($("#aOcultar")) $("#aOcultar").onclick = ()=>{ sessionStorage.removeItem(`senhas-${id}`); viewTermo(id); };
+  $("#aEmail").onclick = ()=>dialogEnviarEmail(t, ()=>viewTermo(id));
+  if(sessionStorage.getItem("enviar-termo")===String(id)){ sessionStorage.removeItem("enviar-termo"); dialogEnviarEmail(t, ()=>viewTermo(id)); }
+  const status = (st, titulo, label) => openDialog(`<h3>${titulo}</h3>
+      <label class="f">Observação (opcional)<textarea name="obs" placeholder="${st==="devolvido"?"Ex.: itens conferidos, notebook com risco na tampa":""}"></textarea></label><p class="err" data-err></p>`,
+      label, async form=>{ await api(`/api/termos/${id}`,{method:"PUT",body:{status:st,observacao:new FormData(form).get("obs")}}); toast("Status atualizado"); viewTermo(id); });
+  if($("#aDev")) $("#aDev").onclick = ()=> t.tipo==="acessos"
+    ? status("devolvido","Registrar revogação dos acessos","Confirmar revogação")
+    : status("devolvido", t.tipo==="completo"?"Registrar devolução dos itens e revogação dos acessos":"Registrar devolução dos itens","Confirmar devolução");
+  if($("#aReat")) $("#aReat").onclick = ()=>status("ativo","Reativar termo","Reativar");
+  if($("#aCanc")) $("#aCanc").onclick = ()=>status("cancelado","Cancelar termo","Cancelar termo");
+  $("#aDup").onclick = ()=>{
+    const d = Object.assign({}, t.dados, {nome:"",cpf:"",rg:"",endereco:"",email:"",cargo:"",setor:"",data:hoje(),obs:""});
+    d.acessos = (d.acessos||[]).map(a=>Object.assign({}, a, {usuario:"", senha:""}));  // mantém os sistemas, limpa logins
+    delete d.empresaSnapshot;
+    try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); }catch(e){}
+    go("#/novo");
+  };
+  if($("#aDel")) $("#aDel").onclick = ()=>openDialog(`<h3>Excluir termo ${esc(t.numero)}?</h3><p>Esta ação não pode ser desfeita. O termo e todo o seu histórico serão apagados. Para manter o registro, prefira <b>Cancelar termo</b>.</p><p class="err" data-err></p>`,
+      "Excluir", async ()=>{ await api(`/api/termos/${id}`,{method:"DELETE",body:{}}); toast("Termo excluído"); go("#/termos"); });
+}
+
+/* =================================================================== usuários */
+async function viewUsuarios(){
+  const r = await api("/api/usuarios");
+  root.innerHTML = `
+  <div class="page">
+    <div class="page-head"><div><h2>Usuários</h2><p>Quem pode acessar o sistema de termos</p></div><span class="sp"></span>
+      <button class="btn primary" id="uNovo">+ Novo usuário</button></div>
+    <div class="card"><table class="list"><thead><tr><th>Nome</th><th>Login</th><th>Perfil</th><th>Situação</th><th class="hide-sm">Último acesso</th><th></th></tr></thead><tbody>
+      ${r.usuarios.map(u=>`<tr><td><b>${esc(u.nome)}</b></td><td class="mono">${esc(u.login)}</td>
+        <td><span class="badge ${u.perfil}">${u.perfil==="admin"?"Administrador":"Usuário"}</span></td>
+        <td>${u.ativo?(u.trocar_senha?`<span class="badge ativo">Aguardando 1º acesso</span>`:`<span class="badge devolvido">Ativo</span>`):`<span class="badge off">Bloqueado</span>`}</td>
+        <td class="hide-sm">${fmtDT(u.ultimo_acesso)}</td>
+        <td style="text-align:right"><button class="btn small" data-ed="${u.id}">Editar</button></td></tr>`).join("")}
+    </tbody></table></div>
+    <p class="hint" style="margin-top:10px"><b>Administrador</b>: gerencia usuários, dados da empresa e pode excluir termos. <b>Usuário</b>: cria, edita, consulta e imprime termos. Novos usuários e senhas redefinidas precisam trocar a senha no primeiro acesso.</p>
+  </div>`;
+  const form = (u)=>`
+    <h3>${u?"Editar usuário":"Novo usuário"}</h3>
+    <label class="f">Nome<input name="nome" value="${esc(u?.nome)}" required></label>
+    <label class="f">Login<input name="login" value="${esc(u?.login)}" ${u?"disabled":""} required autocomplete="off"></label>
+    <div class="row"><label class="f">Perfil<select name="perfil"><option value="usuario">Usuário</option><option value="admin" ${u?.perfil==="admin"?"selected":""}>Administrador</option></select></label>
+    ${u?`<label class="f">Situação<select name="ativo"><option value="1">Ativo</option><option value="0" ${u.ativo?"":"selected"}>Bloqueado</option></select></label>`:"<span></span>"}</div>
+    <label class="f">${u?"Nova senha provisória (deixe vazio para manter)":"Senha provisória (mín. 8 caracteres)"}<input name="senha" type="text" minlength="8" ${u?"":"required"} autocomplete="new-password"></label>
+    <p class="hint">O usuário será obrigado a trocar essa senha no primeiro acesso.</p>
+    <p class="err" data-err></p>`;
+  $("#uNovo").onclick = ()=>openDialog(form(null),"Criar usuário", async f=>{
+    const d = Object.fromEntries(new FormData(f));
+    await api("/api/usuarios",{method:"POST",body:d}); toast("Usuário criado"); viewUsuarios();
+  });
+  $$("[data-ed]").forEach(b=>b.onclick=()=>{
+    const u = r.usuarios.find(x=>x.id==b.dataset.ed);
+    openDialog(form(u),"Salvar", async f=>{
+      const d = Object.fromEntries(new FormData(f)); d.ativo = d.ativo==="1"; if(!d.senha) delete d.senha;
+      await api(`/api/usuarios/${u.id}`,{method:"PUT",body:d}); toast("Usuário atualizado");
+      if(u.id===ME.id){ ME = (await api("/api/me")).user; } viewUsuarios();
+    });
+  });
+}
+
+/* =================================================================== empresa */
+async function viewEmpresa(){
+  const E = Object.assign({}, EMPRESA);
+  root.innerHTML = `
+  <div class="page" style="max-width:720px">
+    <div class="page-head"><div><h2>Dados da empresa</h2><p>Aparecem no cabeçalho, no texto e no rodapé dos novos termos</p></div></div>
+    <div class="card" style="padding:18px;display:grid;gap:12px">
+      <label class="f">Razão social<input id="eE" value="${esc(E.empresa)}"></label>
+      <div class="row"><label class="f">CNPJ<input id="eC" value="${esc(E.cnpj)}"></label><label class="f">Cidade padrão (local de assinatura)<input id="eL" value="${esc(E.local)}"></label></div>
+      <label class="f">Endereço da sede<textarea id="eA" rows="2">${esc(E.empEndereco)}</textarea></label>
+      <label class="f">Contato (rodapé)<input id="eT" value="${esc(E.empContato)}" placeholder="Telefone · e-mail · site"></label>
+      <div class="row"><label class="f">Unidades (uma por linha)<textarea id="eU" rows="4">${esc((E.unidades||[]).join("\n"))}</textarea></label>
+        <label class="f">Domínio do e-mail corporativo<input id="eD" value="${esc(E.dominioEmail||"")}" placeholder="valorizacao.com"><span class="hint">Usado para sugerir nome.sobrenome@domínio</span></label></div>
+      <div><div class="hint" style="margin-bottom:6px">Logo</div>
+        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+          <img id="eImg" src="${esc(E.logo||"/static/logo.jpg")}" style="height:56px;border:1px solid var(--line);border-radius:6px;padding:4px;background:#fff">
+          <label class="btn small">Trocar logo<input type="file" id="eFile" accept="image/png,image/jpeg,image/svg+xml" hidden></label>
+          <button class="btn small ghost" id="eReset">Usar logo padrão</button>
+        </div></div>
+      <div style="display:flex;justify-content:flex-end"><button class="btn primary" id="eSave">Salvar</button></div>
+      <p class="hint">Termos já salvos mantêm os dados da empresa da época em que foram criados.</p>
+    </div>
+
+    <div class="page-head" style="margin-top:28px"><div><h2>E-mail</h2><p>Conta usada para enviar a via do termo aos colaboradores</p></div></div>
+    <div class="card" style="padding:18px;display:grid;gap:12px">
+      <div class="row"><label class="f">Servidor SMTP<input id="mH" placeholder="smtp.office365.com / smtp.gmail.com"></label>
+        <div class="row"><label class="f">Porta<input id="mP" type="number"></label>
+          <label class="f">Segurança<select id="mS"><option value="starttls">STARTTLS</option><option value="ssl">SSL</option><option value="nenhuma">Nenhuma</option></select></label></div></div>
+      <div class="row"><label class="f">Usuário<input id="mU" autocomplete="off"></label>
+        <label class="f">Senha<input id="mW" type="password" autocomplete="new-password"></label></div>
+      <div class="row"><label class="f">E-mail remetente<input id="mF" type="email" placeholder="rh@valorizacao.com"></label>
+        <label class="f">Nome do remetente<input id="mN" placeholder="Valorização Assessoria Contábil"></label></div>
+      <label class="f">Cópia para (opcional — recebe cópia de todo termo enviado)<input id="mC" type="email"></label>
+      <p class="hint">No Gmail/Microsoft 365 com verificação em duas etapas, use uma <b>senha de app</b>. Deixe a senha em branco para manter a atual.</p>
+      <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+        <button class="btn" id="mTest">Enviar e-mail de teste</button><button class="btn primary" id="mSave">Salvar configuração</button></div>
+    </div>
+  </div>`;
+  const M = await api("/api/smtp");
+  $("#mH").value=M.host; $("#mP").value=M.porta; $("#mS").value=M.seguranca; $("#mU").value=M.usuario;
+  $("#mF").value=M.remetente; $("#mN").value=M.nome_remetente; $("#mC").value=M.copia||"";
+  $("#mW").placeholder = M.tem_senha ? "•••••••• (salva)" : "";
+  const smtpBody = ()=>({host:$("#mH").value.trim(),porta:+$("#mP").value||587,seguranca:$("#mS").value,usuario:$("#mU").value.trim(),
+    senha:$("#mW").value,remetente:$("#mF").value.trim(),nome_remetente:$("#mN").value.trim(),copia:$("#mC").value.trim()});
+  $("#mSave").onclick = async ()=>{ try{ await api("/api/smtp",{method:"PUT",body:smtpBody()}); $("#mW").value=""; toast("Configuração de e-mail salva"); }catch(e){ toast(e.message); } };
+  $("#mTest").onclick = ()=>openDialog(`<h3>Enviar e-mail de teste</h3><p class="hint">Salve a configuração antes de testar.</p>
+      <label class="f">Enviar para<input name="para" type="email" value="${esc(ME.login.includes("@")?ME.login:"")}" required></label><p class="err" data-err></p>`,
+      "Enviar teste", async f=>{ await api("/api/smtp/teste",{method:"POST",body:{para:new FormData(f).get("para")}}); toast("E-mail de teste enviado"); });
+  $("#eFile").onchange = e=>{ const f=e.target.files[0]; if(!f) return; if(f.size>1.5e6){ toast("Use uma imagem de até 1,5 MB"); return; }
+    const r=new FileReader(); r.onload=()=>{ E.logo=r.result; $("#eImg").src=r.result; }; r.readAsDataURL(f); };
+  $("#eC").oninput = e=> e.target.value = maskCNPJ(e.target.value);
+  $("#eReset").onclick = ()=>{ E.logo=null; $("#eImg").src="/static/logo.jpg"; };
+  $("#eSave").onclick = async ()=>{
+    Object.assign(E,{empresa:$("#eE").value,cnpj:$("#eC").value,local:$("#eL").value,empEndereco:$("#eA").value,empContato:$("#eT").value,
+      unidades:$("#eU").value.split("\n").map(s=>s.trim()).filter(Boolean), dominioEmail:$("#eD").value.trim().replace(/^@/,"")});
+    try{ await api("/api/empresa",{method:"PUT",body:E}); EMPRESA=E; toast("Dados da empresa salvos"); }catch(e){ toast(e.message); }
+  };
+}
+
+/* =================================================================== boot */
+(async ()=>{
+  try{ ME = (await api("/api/me")).user; }catch(e){}
+  route();
+})();
+</script>
+</body>
+</html>
