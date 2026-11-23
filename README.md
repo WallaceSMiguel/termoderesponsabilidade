@@ -40,3 +40,8 @@ Todo o conteúdo está no arquivo `DATA_DIR/termos.db` (SQLite). Faça cópia pe
 ```powershell
 python -m PyInstaller --noconfirm --onefile --name TermosResponsabilidade --icon icone.ico --add-data "static;static" --hidden-import waitress iniciar.py
 ```
+
+## PythonAnywhere
+No arquivo WSGI, defina `DATA_DIR` (pasta fora do código), `COOKIE_SECURE=1` e `SQLITE_JOURNAL=DELETE`
+(o modo WAL do SQLite não é seguro no disco de rede do PythonAnywhere). Para atualizar:
+`cd ~/termoderesponsabilidade && git pull` no console e **Reload** na aba Web.

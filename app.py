@@ -131,7 +131,9 @@ def _close_db(exc):
 
 def init_db():
     conn = sqlite3.connect(DB_PATH, timeout=15)
-    conn.execute("PRAGMA journal_mode=WAL")
+    # WAL é mais rápido, mas não é seguro em discos de rede (ex.: PythonAnywhere) -> SQLITE_JOURNAL=DELETE
+    modo = os.environ.get("SQLITE_JOURNAL", "WAL").upper()
+    conn.execute(f"PRAGMA journal_mode={'DELETE' if modo == 'DELETE' else 'WAL'}")
     conn.executescript(SCHEMA)
     # migração: colunas novas em bancos já existentes
     cols = {c[1] for c in conn.execute("PRAGMA table_info(termos)")}
