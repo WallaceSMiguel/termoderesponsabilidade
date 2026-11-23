@@ -116,7 +116,7 @@ details.sec:not([open])>summary::after{transform:rotate(-90deg)}
 .chip:hover{border-color:#f7b59d}
 .chip.on{border-color:var(--brand);background:var(--brand);color:#fff}
 .sys-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.sys{position:relative;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:10px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;text-align:left;transition:all .15s}
+.sys{position:relative;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:10px 26px 10px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;text-align:left;transition:all .15s}
 .sys .ic{width:30px;height:30px;border-radius:8px;background:#f3f4f6;display:grid;place-items:center;font-size:16px;flex:none}
 .sys .ck{position:absolute;top:6px;right:8px;font-style:normal;font-size:12px;color:#fff;background:var(--brand);width:18px;height:18px;border-radius:50%;display:none;place-items:center}
 .sys:hover{border-color:#f7b59d}
@@ -365,11 +365,11 @@ function docHTML(S, numero){
     <td>${it.item&&it.estado?`<span class="pill ${pillClass(it.estado)}">${esc(it.estado)}</span>`:""}</td><td>${esc(it.obs)}</td></tr>`).join("");
   const acessos = (S.acessos||[]).filter(a=>a.sistema||a.usuario);
   const tabelaAcessos = `
-      <table class="items acc"><thead><tr><th style="width:28px">Nº</th><th>Sistema / Serviço</th><th>Usuário / Login</th><th>Detalhe</th><th style="width:22%">Senha provisória</th></tr></thead><tbody>
+      <table class="items acc"><thead><tr><th style="width:28px">Nº</th><th>Sistema / Serviço</th><th>Usuário / Login</th><th>Detalhe</th><th style="width:22%">Senha</th></tr></thead><tbody>
       ${(acessos.length?acessos:[{},{},{}]).map((a,i)=>`<tr><td class="c">${i+1}</td><td><b>${esc(a.sistema)||"&nbsp;"}</b></td><td>${esc(a.usuario)}</td>
         <td>${esc(a.detalhe||a.link)}</td><td>${a.senha?`<span class="mono-doc">${esc(a.senha)}</span>`:`<span class="blank-line"></span>`}</td></tr>`).join("")}
       </tbody></table>
-      <p class="note">Senhas provisórias não ficam registradas no sistema; quando não impressas, são entregues pessoalmente e devem ser trocadas no primeiro acesso.</p>`;
+      <p class="note">As senhas não ficam registradas no sistema; quando não impressas, são entregues pessoalmente.</p>`;
   let n = 0; const C = () => `${++n}ª`;
 
   const head = `
@@ -400,7 +400,7 @@ function docHTML(S, numero){
   const clausulasCredenciais = `
       <ul><li>Utilizar os acessos exclusivamente para atividades relacionadas à EMPRESA;</li>
       <li>Manter usuário e senha em sigilo — as credenciais são pessoais e intransferíveis;</li>
-      <li>Alterar a senha provisória no primeiro acesso, utilizando senha forte;</li>
+      <li>Alterar a senha no primeiro acesso, utilizando senha forte;</li>
       <li>Não anotar senhas em locais visíveis nem compartilhá-las com terceiros, inclusive colegas;</li>
       <li>Bloquear o computador ao se ausentar da estação de trabalho;</li>
       <li>Comunicar imediatamente qualquer suspeita de uso indevido, vazamento ou acesso não autorizado.</li></ul>`;
@@ -702,9 +702,9 @@ async function viewEditor(id){
           <button type="button" class="sys outro" id="btnOutro"><span class="ic">＋</span><span>Outro acesso</span></button>
         </div>
         <div class="acc-tools"><button type="button" class="btn small" id="btnLogins">✨ Preencher logins pelo nome</button>
-          <button type="button" class="btn small" id="btnSenhas">🔐 Gerar senhas provisórias</button></div>
+          <button type="button" class="btn small" id="btnSenhas">🔐 Gerar senhas</button></div>
         <div id="accForm" style="display:grid;gap:10px"></div>
-        <p class="hint">🔒 As senhas provisórias aparecem só na impressão feita agora — <b>não são gravadas</b> no sistema nem enviadas por e-mail.</p>
+        <p class="hint">🔒 As senhas aparecem só na impressão feita agora — <b>não são gravadas</b> no sistema nem enviadas por e-mail.</p>
       </div></details>
 
       <details class="sec" open><summary><span class="num">4</span>Assinaturas, local e data</summary><div class="body">
@@ -755,7 +755,7 @@ async function viewEditor(id){
         ${c?"":`<label class="f">Sistema / Serviço<input data-a="${i}" data-f="sistema" value="${esc(a.sistema)}" placeholder="Ex.: Zap Contábil"></label>`}
         <div class="row"><label class="f">Usuário / Login<input data-a="${i}" data-f="usuario" value="${esc(a.usuario)}" placeholder="${a.sid==="email"?"nome.sobrenome@empresa.com":a.sid==="linkus"?"(opcional)":"nome.sobrenome"}"></label>
           <label class="f">${esc(c?c.det:"Detalhe")}<input data-a="${i}" data-f="detalhe" value="${esc(a.detalhe)}" placeholder="${esc(c?c.ph:"Link, observação…")}"></label></div>
-        <label class="f">Senha provisória (não é salva)<div class="pw"><input data-a="${i}" data-f="senha" value="${esc(a.senha)}" autocomplete="off" spellcheck="false" placeholder="Opcional — em branco sai uma linha para preencher à mão"><button type="button" class="btn small" data-gen="${i}" title="Gerar senha">🎲</button></div></label>
+        <label class="f">Senha (não é salva)<div class="pw"><input data-a="${i}" data-f="senha" value="${esc(a.senha)}" autocomplete="off" spellcheck="false" placeholder="Opcional — em branco sai uma linha para preencher à mão"><button type="button" class="btn small" data-gen="${i}" title="Gerar senha">🎲</button></div></label>
       </div>`; }).join("") : `<div class="empty-acc">Toque nos acessos acima para adicioná-los ao termo.</div>`;
     $$("[data-f]",box).forEach(el=>el.oninput=()=>{ S.acessos[el.dataset.a][el.dataset.f]=el.value; if(el.dataset.f==="sistema") S.acessos[el.dataset.a].sid=""; update(); });
     $$("[data-rma]",box).forEach(b=>b.onclick=()=>{ S.acessos.splice(+b.dataset.rma,1); accForm(); update(); });
@@ -824,7 +824,7 @@ async function viewTermo(id){
   <div class="view">
     <div class="preview" style="padding:0"><article class="sheet">${docHTML(dadosImpressao, t.numero)}</article></div>
     <aside class="side">
-      ${temSenhas?`<div class="senha-aviso noprint">🔐 As senhas provisórias aparecem nesta impressão, mas <b>não foram salvas</b>. Imprima agora — ao sair desta tela elas somem. <button class="btn small" id="aOcultar" style="margin-top:6px">Ocultar senhas</button></div>`:""}
+      ${temSenhas?`<div class="senha-aviso noprint">🔐 As senhas aparecem nesta impressão, mas <b>não foram salvas</b>. Imprima agora — ao sair desta tela elas somem. <button class="btn small" id="aOcultar" style="margin-top:6px">Ocultar senhas</button></div>`:""}
       <div class="card">
         <h4>Termo ${esc(t.numero)}</h4>
         <dl class="kv">

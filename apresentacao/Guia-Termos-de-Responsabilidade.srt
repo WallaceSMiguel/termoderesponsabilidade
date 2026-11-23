@@ -1,0 +1,219 @@
+1
+00:00:00,600 --> 00:00:07,523
+Olá! Este é o guia do sistema de Termos de Responsabilidade da Valorização Assessoria Contábil.
+
+2
+00:00:07,573 --> 00:00:15,965
+Em poucos minutos, você vai aprender a criar, imprimir, enviar e acompanhar os termos de equipamentos e de acessos.
+
+3
+00:00:16,915 --> 00:00:20,055
+O sistema faz quatro coisas principais.
+
+4
+00:00:20,105 --> 00:00:25,208
+Gera o termo de equipamentos, como notebook, monitor e celular.
+
+5
+00:00:25,258 --> 00:00:33,224
+Gera o termo de acessos, com rede, e-mail, Onvio, Domínio Web, telefonia Linkus e pastas mapeadas.
+
+6
+00:00:33,274 --> 00:00:38,376
+Separa tudo por unidade: Barra, Nova América e Duque de Caxias.
+
+7
+00:00:38,426 --> 00:00:44,020
+E envia a via em PDF por e-mail, guardando o histórico de cada termo.
+
+8
+00:00:44,970 --> 00:00:50,778
+Para acessar, dê dois cliques no arquivo Termos Responsabilidade ponto exe.
+
+9
+00:00:50,828 --> 00:00:52,731
+O navegador abre sozinho.
+
+10
+00:00:52,781 --> 00:00:58,043
+Se o sistema estiver na nuvem, use o endereço informado pela equipe.
+
+11
+00:00:58,093 --> 00:01:02,339
+Entre com o login e a senha criados pelo administrador.
+
+12
+00:01:02,389 --> 00:01:07,494
+No primeiro acesso, o sistema pede que você defina uma senha nova.
+
+13
+00:01:08,444 --> 00:01:10,122
+Esta é a tela inicial.
+
+14
+00:01:10,172 --> 00:01:15,542
+No topo ficam as abas de cada unidade, com o número de termos ativos.
+
+15
+00:01:15,592 --> 00:01:21,983
+Use a busca para encontrar por nome, CPF, número do termo, equipamento ou sistema.
+
+16
+00:01:22,033 --> 00:01:27,953
+Filtre por tipo e por status, e clique em qualquer linha para abrir o termo.
+
+17
+00:01:28,903 --> 00:01:31,828
+Criar um termo leva quatro passos.
+
+18
+00:01:31,878 --> 00:01:34,015
+Primeiro, escolha o tipo.
+
+19
+00:01:34,065 --> 00:01:37,778
+Depois, preencha o colaborador e a unidade.
+
+20
+00:01:37,828 --> 00:01:42,416
+Em seguida, informe os itens ou os acessos entregues.
+
+21
+00:01:42,466 --> 00:01:46,266
+Por fim, salve, imprima ou envie por e-mail.
+
+22
+00:01:47,216 --> 00:01:49,797
+Passo um: escolha o tipo de termo.
+
+23
+00:01:49,847 --> 00:01:53,976
+Equipamentos é o termo de entrega e devolução de bens.
+
+24
+00:01:54,026 --> 00:01:58,464
+Acessos é a ficha com os sistemas e logins do colaborador.
+
+25
+00:01:58,514 --> 00:02:03,494
+E Junto gera um único documento com os equipamentos e os acessos.
+
+26
+00:02:04,444 --> 00:02:11,910
+Passo dois: selecione a unidade e preencha os dados do colaborador, como nome, CPF, cargo e setor.
+
+27
+00:02:11,960 --> 00:02:17,355
+Informe também o e-mail pessoal, para onde a via do termo será enviada.
+
+28
+00:02:17,405 --> 00:02:22,110
+Repare que o documento vai se montando ao lado, em tempo real.
+
+29
+00:02:23,060 --> 00:02:32,922
+Passo três, para equipamentos: informe cada item entregue, com o número de patrimônio ou de série, a quantidade e o estado de conservação.
+
+30
+00:02:32,972 --> 00:02:37,662
+Use o botão adicionar item para incluir quantos forem necessários.
+
+31
+00:02:38,612 --> 00:02:49,321
+Para acessos, toque nos cartões dos sistemas entregues: rede e VPN, e-mail corporativo, Onvio, Domínio Web, telefonia Linkus ou pasta mapeada.
+
+32
+00:02:49,371 --> 00:02:58,868
+O botão preencher logins pelo nome sugere o usuário no padrão nome ponto sobrenome, e o botão gerar senhas cria senhas fortes.
+
+33
+00:02:58,918 --> 00:03:03,186
+Complete os detalhes, como o ramal ou o caminho da pasta.
+
+34
+00:03:04,136 --> 00:03:09,911
+Atenção às senhas. Elas aparecem apenas na impressão feita logo após salvar.
+
+35
+00:03:09,961 --> 00:03:16,578
+O sistema não guarda senhas no banco de dados, e o PDF enviado por e-mail sai sem elas.
+
+36
+00:03:16,628 --> 00:03:22,556
+Se você deixar a senha em branco, o termo traz uma linha para preencher à mão.
+
+37
+00:03:23,506 --> 00:03:26,292
+Passo quatro: clique em salvar termo.
+
+38
+00:03:26,342 --> 00:03:30,739
+O sistema gera um número automático e abre o termo pronto.
+
+39
+00:03:30,789 --> 00:03:38,558
+Daqui você pode imprimir ou salvar em PDF, enviar por e-mail ao colaborador ou editar quando precisar.
+
+40
+00:03:38,608 --> 00:03:41,165
+Tudo fica registrado no histórico.
+
+41
+00:03:42,115 --> 00:03:45,556
+O colaborador recebe a via do termo por e-mail.
+
+42
+00:03:45,606 --> 00:03:52,315
+Basta deixar marcada a opção enviar a via ao salvar, ou clicar em enviar por e-mail depois.
+
+43
+00:03:52,365 --> 00:03:57,515
+Ele recebe o documento em PDF, e o envio fica registrado no histórico.
+
+44
+00:03:58,465 --> 00:04:05,291
+No dia a dia, registre a devolução dos itens ou a revogação dos acessos quando o colaborador sair.
+
+45
+00:04:05,341 --> 00:04:13,992
+Você também pode cancelar um termo sem apagá-lo, ou duplicar para outro colaborador aproveitando os mesmos itens e sistemas.
+
+46
+00:04:14,042 --> 00:04:18,062
+O histórico mostra quem criou, editou e enviou cada termo.
+
+47
+00:04:19,012 --> 00:04:24,750
+Se você for administrador, cuida também dos usuários e dos dados da empresa.
+
+48
+00:04:24,800 --> 00:04:30,082
+Em usuários, crie novos acessos, defina o perfil e bloqueie quem saiu.
+
+49
+00:04:30,132 --> 00:04:37,470
+Em empresa, ajuste os dados, a logo, a lista de unidades e a conta de e-mail que envia os termos.
+
+50
+00:04:38,420 --> 00:04:43,054
+Algumas dicas. Confira os dados na prévia antes de salvar.
+
+51
+00:04:43,104 --> 00:04:47,092
+Entregue as senhas pessoalmente, nunca por e-mail.
+
+52
+00:04:47,142 --> 00:04:51,777
+Registre a devolução e a revogação no dia do desligamento.
+
+53
+00:04:51,827 --> 00:04:56,300
+E faça cópias de segurança da pasta data com frequência.
+
+54
+00:04:57,250 --> 00:05:06,263
+Pronto! Agora você já sabe usar o sistema: novo termo, tipo e unidade, itens ou acessos, e salvar e enviar.
+
+55
+00:05:06,313 --> 00:05:11,345
+Em caso de dúvidas, fale com a equipe de Gestão de Projetos.

@@ -4,3 +4,5 @@ __pycache__/
 *.pyc
 build/
 dist/
+# vídeo gerado (53 MB) – grande demais para o Git; refaça com apresentacao/gerador
+apresentacao/*.mp4
