@@ -522,7 +522,7 @@ async function route(){
     if((m=h.match(/^#\/termo\/(\d+)\/editar$/))) return viewEditor(+m[1]);
     if((m=h.match(/^#\/termo\/(\d+)$/))) return viewTermo(+m[1]);
     if(h==="#/usuarios" && isAdmin()) return viewUsuarios();
-    if(h==="#/empresa" && isAdmin()) return viewEmpresa();
+    if(h.split("?")[0]==="#/empresa" && isAdmin()) return viewEmpresa();
     if(h==="#/backup" && isAdmin()) return viewBackup();
     go("#/termos");
   }catch(e){ if(e.message) toast(e.message); }
@@ -1029,7 +1029,18 @@ async function viewEmpresa(){
     </div>
 
     <div class="page-head" style="margin-top:28px"><div><h2>E-mail</h2><p>Conta usada para enviar a via do termo aos colaboradores</p></div></div>
+    <div class="card" style="padding:18px;display:grid;gap:12px;margin-bottom:14px">
+      <div><b>Enviar pelo Gmail (API)</b> <span class="hint" id="gStatus"></span>
+        <p class="hint" style="margin-top:4px">Envia por HTTPS, sem SMTP — funciona na conta gratuita do PythonAnywhere. Quando o Gmail está conectado, ele é usado no lugar do SMTP abaixo.</p></div>
+      <div class="row"><label class="f">Client ID<input id="gI" autocomplete="off" placeholder="....apps.googleusercontent.com"></label>
+        <label class="f">Client secret<input id="gS" type="password" autocomplete="new-password"></label></div>
+      <p class="hint">No Google Cloud, cadastre este URI de redirecionamento autorizado: <code id="gR" style="user-select:all"></code></p>
+      <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+        <button class="btn ghost" id="gDesc" hidden>Desconectar</button>
+        <button class="btn" id="gSave">Salvar credencial</button><button class="btn primary" id="gCon">Conectar Gmail</button></div>
+    </div>
     <div class="card" style="padding:18px;display:grid;gap:12px">
+      <div><b>Enviar por SMTP</b></div>
       <div class="row"><label class="f">Servidor SMTP<input id="mH" placeholder="smtp.office365.com / smtp.gmail.com"></label>
         <div class="row"><label class="f">Porta<input id="mP" type="number"></label>
           <label class="f">Segurança<select id="mS"><option value="starttls">STARTTLS</option><option value="ssl">SSL</option><option value="nenhuma">Nenhuma</option></select></label></div></div>
@@ -1043,6 +1054,18 @@ async function viewEmpresa(){
         <button class="btn" id="mTest">Enviar e-mail de teste</button><button class="btn primary" id="mSave">Salvar configuração</button></div>
     </div>
   </div>`;
+  const gMsg = {ok:"Gmail conectado", cancelado:"Autorização do Gmail cancelada",
+    erro_token:"O Google não liberou o acesso. Confira o Client ID/secret e o URI de redirecionamento.",
+    erro_estado:"Sessão expirada. Clique em Conectar Gmail de novo."}[new URLSearchParams(location.hash.split("?")[1]||"").get("gmail")];
+  if(gMsg){ toast(gMsg); history.replaceState(null,"","#/empresa"); }
+  const G = await api("/api/gmail");
+  $("#gI").value=G.client_id; $("#gS").placeholder = G.tem_secret ? "•••••••• (salvo)" : ""; $("#gR").textContent=G.redirect_uri;
+  $("#gStatus").textContent = G.conectado ? `— conectado como ${G.email||"(conta Google)"}` : "— não conectado";
+  $("#gDesc").hidden = !G.conectado;
+  const gSalvar = ()=>api("/api/gmail",{method:"PUT",body:{client_id:$("#gI").value.trim(),client_secret:$("#gS").value.trim()}});
+  $("#gSave").onclick = async ()=>{ try{ await gSalvar(); toast("Credencial do Gmail salva"); viewEmpresa(); }catch(e){ toast(e.message); } };
+  $("#gCon").onclick = async ()=>{ try{ await gSalvar(); location.href="/api/gmail/conectar"; }catch(e){ toast(e.message); } };
+  $("#gDesc").onclick = async ()=>{ try{ await api("/api/gmail/desconectar",{method:"POST",body:{}}); toast("Gmail desconectado"); viewEmpresa(); }catch(e){ toast(e.message); } };
   const M = await api("/api/smtp");
   $("#mH").value=M.host; $("#mP").value=M.porta; $("#mS").value=M.seguranca; $("#mU").value=M.usuario;
   $("#mF").value=M.remetente; $("#mN").value=M.nome_remetente; $("#mC").value=M.copia||"";

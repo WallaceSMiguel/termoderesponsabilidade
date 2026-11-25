@@ -510,11 +510,14 @@ def smtp_config():
 
 def enviar_email(para, assunto, texto, html, anexos=()):
     cfg = smtp_config()
-    if not cfg["host"] or not cfg["remetente"]:
+    gm = gmail_config()
+    usar_gmail = bool(gm["refresh_token"])
+    if not usar_gmail and (not cfg["host"] or not cfg["remetente"]):
         raise RuntimeError("Envio de e-mail não configurado. Peça ao administrador para configurar em Empresa › E-mail.")
     msg = EmailMessage()
     msg["Subject"] = assunto
-    msg["From"] = formataddr((cfg["nome_remetente"] or "", cfg["remetente"]))
+    remetente = gm["email"] if usar_gmail else cfg["remetente"]
+    msg["From"] = formataddr((cfg["nome_remetente"] or "", remetente))
     msg["To"] = para
     if cfg.get("copia"):
         msg["Cc"] = cfg["copia"]
@@ -524,6 +527,8 @@ def enviar_email(para, assunto, texto, html, anexos=()):
     for nome, dados, tipo in anexos:
         maintype, subtype = tipo.split("/")
         msg.add_attachment(dados, maintype=maintype, subtype=subtype, filename=nome)
+    if usar_gmail:
+        return _gmail_enviar(gm, msg)
     ctx = ssl.create_default_context()
     try:
         if cfg["seguranca"] == "ssl":
@@ -540,6 +545,161 @@ def enviar_email(para, assunto, texto, html, anexos=()):
         raise RuntimeError("O servidor de e-mail recusou o usuário/senha configurados.")
     except (smtplib.SMTPException, OSError) as e:
         raise RuntimeError(f"Falha ao enviar o e-mail: {e}")
+
+
+# ---------------------------------------------------------------- e-mail (API do Gmail)
+# Envia por HTTPS (gmail.googleapis.com) em vez de SMTP. Útil em hospedagens que bloqueiam
+# SMTP, como a conta gratuita do PythonAnywhere (que libera *.googleapis.com).
+
+GMAIL_PADRAO = {"client_id": "", "client_secret": "", "refresh_token": "", "email": ""}
+GMAIL_ESCOPOS = "openid email https://www.googleapis.com/auth/gmail.send"
+_gmail_token = {"valor": None, "expira": 0}
+
+
+def gmail_config():
+    r = db().execute("SELECT valor FROM config WHERE chave='gmail'").fetchone()
+    return dict(GMAIL_PADRAO, **(json.loads(r["valor"]) if r else {}))
+
+
+def _gmail_salvar(cfg):
+    db().execute("INSERT OR REPLACE INTO config VALUES ('gmail', ?)", (json.dumps(cfg),))
+    db().commit()
+
+
+def _http_json(url, dados=None, token=None, corpo_json=None):
+    """POST simples com urllib (respeita o proxy https_proxy do PythonAnywhere)."""
+    import urllib.error
+    import urllib.parse
+    import urllib.request
+    headers = {}
+    if corpo_json is not None:
+        body = json.dumps(corpo_json).encode()
+        headers["Content-Type"] = "application/json"
+    else:
+        body = urllib.parse.urlencode(dados or {}).encode()
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    req = urllib.request.Request(url, data=body, headers=headers, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read().decode() or "{}")
+    except urllib.error.HTTPError as e:
+        try:
+            detalhe = json.loads(e.read().decode())
+        except Exception:
+            detalhe = {}
+        err = detalhe.get("error")
+        if isinstance(err, dict):
+            err = err.get("message")
+        raise RuntimeError(f"{e.code} {err or detalhe.get('error_description') or e.reason}")
+    except OSError as e:
+        raise RuntimeError(str(e))
+
+
+def _gmail_redirect_uri():
+    if os.environ.get("GMAIL_REDIRECT_URI"):
+        return os.environ["GMAIL_REDIRECT_URI"]
+    host = request.host
+    local = host.split(":")[0] in ("localhost", "127.0.0.1")
+    esquema = request.headers.get("X-Forwarded-Proto") or ("http" if local else "https")
+    return f"{esquema}://{host}/api/gmail/callback"
+
+
+def _gmail_enviar(gm, msg):
+    try:
+        if not _gmail_token["valor"] or time.time() > _gmail_token["expira"] - 60:
+            t = _http_json("https://oauth2.googleapis.com/token", {
+                "client_id": gm["client_id"], "client_secret": gm["client_secret"],
+                "refresh_token": gm["refresh_token"], "grant_type": "refresh_token"})
+            _gmail_token.update(valor=t["access_token"], expira=time.time() + int(t.get("expires_in", 3600)))
+        raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
+        _http_json("https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
+                   token=_gmail_token["valor"], corpo_json={"raw": raw})
+    except RuntimeError as e:
+        _gmail_token["valor"] = None
+        if "invalid_grant" in str(e):
+            raise RuntimeError("A autorização do Gmail expirou ou foi revogada. Clique em \"Conectar Gmail\" novamente.")
+        raise RuntimeError(f"Falha ao enviar o e-mail pelo Gmail: {e}")
+
+
+@app.get("/api/gmail")
+@login_required(admin=True)
+def api_gmail():
+    gm = gmail_config()
+    return jsonify(client_id=gm["client_id"], tem_secret=bool(gm["client_secret"]),
+                   conectado=bool(gm["refresh_token"]), email=gm["email"], redirect_uri=_gmail_redirect_uri())
+
+
+@app.put("/api/gmail")
+@login_required(admin=True)
+def api_salvar_gmail():
+    d = request.get_json() or {}
+    gm = gmail_config()
+    novo_id = (d.get("client_id") or "").strip()
+    if novo_id != gm["client_id"]:  # trocou a credencial: precisa autorizar de novo
+        gm.update(refresh_token="", email="")
+    gm["client_id"] = novo_id
+    if (d.get("client_secret") or "").strip():
+        gm["client_secret"] = d["client_secret"].strip()
+    _gmail_salvar(gm)
+    return jsonify(ok=True)
+
+
+@app.post("/api/gmail/desconectar")
+@login_required(admin=True)
+def api_gmail_desconectar():
+    gm = gmail_config()
+    gm.update(refresh_token="", email="")
+    _gmail_salvar(gm)
+    _gmail_token["valor"] = None
+    return jsonify(ok=True)
+
+
+@app.get("/api/gmail/conectar")
+@login_required(admin=True)
+def api_gmail_conectar():
+    import urllib.parse
+    from flask import redirect
+    gm = gmail_config()
+    if not gm["client_id"] or not gm["client_secret"]:
+        return jsonify(erro="Salve o Client ID e o Client secret antes de conectar"), 400
+    session["gmail_state"] = secrets.token_urlsafe(24)
+    url = "https://accounts.google.com/o/oauth2/v2/auth?" + urllib.parse.urlencode({
+        "client_id": gm["client_id"], "redirect_uri": _gmail_redirect_uri(), "response_type": "code",
+        "scope": GMAIL_ESCOPOS, "access_type": "offline", "prompt": "consent",
+        "state": session["gmail_state"]})
+    return redirect(url)
+
+
+@app.get("/api/gmail/callback")
+@login_required(admin=True)
+def api_gmail_callback():
+    from flask import redirect
+    estado = session.pop("gmail_state", None)
+    if not estado or request.args.get("state") != estado:
+        return redirect("/#/empresa?gmail=erro_estado")
+    if request.args.get("error") or not request.args.get("code"):
+        return redirect("/#/empresa?gmail=cancelado")
+    gm = gmail_config()
+    try:
+        t = _http_json("https://oauth2.googleapis.com/token", {
+            "code": request.args["code"], "client_id": gm["client_id"], "client_secret": gm["client_secret"],
+            "redirect_uri": _gmail_redirect_uri(), "grant_type": "authorization_code"})
+    except RuntimeError:
+        return redirect("/#/empresa?gmail=erro_token")
+    if not t.get("refresh_token"):
+        return redirect("/#/empresa?gmail=erro_token")
+    email = ""
+    try:  # o id_token veio direto do Google por HTTPS; só lemos o e-mail dele
+        carga = t["id_token"].split(".")[1]
+        email = json.loads(base64.urlsafe_b64decode(carga + "=" * (-len(carga) % 4))).get("email", "")
+    except Exception:
+        pass
+    gm.update(refresh_token=t["refresh_token"], email=email)
+    _gmail_salvar(gm)
+    _gmail_token.update(valor=t.get("access_token"), expira=time.time() + int(t.get("expires_in", 3600)))
+    return redirect("/#/empresa?gmail=ok")
 
 
 def _html_email(corpo_html, empresa):
